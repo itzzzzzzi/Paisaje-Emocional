@@ -1,104 +1,147 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Paisaje Emocional — silvia & the spyglass</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <header class="header">
+
         <div class="header-left">
+
             <div class="eyebrow">
-                silvia & the spyglass / ESTUDIO ARTE Y NEUROCIENCIA II
+                silvia & the spyglass / estudio arte y neurociencia ii
             </div>
+
             <h1>Paisaje Emocional</h1>
+
         </div>
-        
+
+
         <div class="header-info">
-            56 OBRAS · 100 PARTICIPANTES
-            <br>
-            EEG · GSR · HR
+            56 OBRAS · 100 PARTICIPANTES · EEG · GSR · HR
         </div>
+
     </header>
 
 
     <main>
 
         <section class="map-container">
+
             <canvas id="emotionCanvas"></canvas>
+
             <div id="artworkLayer"></div>
+
         </section>
 
 
-        <nav class="emotion-filter" aria-label="Filtrar por emoción">
+        <nav
+            class="emotion-filter"
+            aria-label="Filtrar por emoción"
+        >
+
             <button
                 class="emotion active"
-                data-emotion="all">
+                data-emotion="all"
+            >
                 todas
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Alegría">
+                data-emotion="Alegría"
+            >
                 alegría
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Confianza">
+                data-emotion="Confianza"
+            >
                 confianza
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Curiosidad">
+                data-emotion="Curiosidad"
+            >
                 curiosidad
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Sorpresa">
+                data-emotion="Sorpresa"
+            >
                 sorpresa
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Disgusto">
+                data-emotion="Disgusto"
+            >
                 disgusto
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Ira">
+                data-emotion="Ira"
+            >
                 ira
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Miedo">
+                data-emotion="Miedo"
+            >
                 miedo
             </button>
+
             <button
                 class="emotion"
-                data-emotion="Tristeza">
+                data-emotion="Tristeza"
+            >
                 tristeza
             </button>
+
         </nav>
-        
-        <aside id="artworkInfo" class="artwork-info">
+
+
+        <aside
+            id="artworkInfo"
+            class="artwork-info"
+        >
+
             <button
                 id="closeInfo"
-                class="close-info">
-                ×
+                class="close-info"
+                aria-label="Cerrar"
+            >
+                X
             </button>
+
             <div class="info-label">
                 OBRA
             </div>
+
             <h2 id="artworkTitle"></h2>
+
             <div id="emotionValues"></div>
-            <p class="method-note">
-                Los datos representan la presencia relativa de las
-                ocho dimensiones emocionales analizadas en el estudio.
-            </p>
+
         </aside>
-        
+
     </main>
+
+
     <script src="script.js"></script>
+
 </body>
+
 </html>
