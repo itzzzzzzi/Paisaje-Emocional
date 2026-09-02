@@ -4,7 +4,6 @@
     --black: #171715;
     --grey: #77736c;
 
-    /* colores del gráfico de emociones */
     --alegria: #e2dd00;
     --confianza: #00fa00;
     --curiosidad: #ff9933;
@@ -13,7 +12,15 @@
     --ira: #f00000;
     --miedo: #009800;
     --tristeza: #5152ff;
+
+    --header-height: 76px;
+    --filter-height: 53px;
 }
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
 
 * {
     box-sizing: border-box;
@@ -30,28 +37,35 @@ body {
 body {
     background: var(--background);
     color: var(--black);
+
     font-family: "Times New Roman", Times, serif;
     font-size: 14px;
-    overflow-x: hidden;
+
+    overflow: hidden;
 }
+
 
 /* =========================================================
    HEADER
    ========================================================= */
 
 .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+
     width: 100%;
-    min-height: 76px;
+    height: var(--header-height);
+
     padding: 17px 22px 15px 22px;
 
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 30px;
 
     background: var(--background);
-    position: relative;
-    z-index: 20;
+
+    z-index: 100;
 }
 
 .header-left {
@@ -59,12 +73,15 @@ body {
 }
 
 .eyebrow {
-    margin: 0 0 4px 0;
+    margin: 0 0 5px 0;
 
     font-family: "Times New Roman", Times, serif;
     font-size: 14px;
-    line-height: 1.15;
+    font-weight: 400;
+    line-height: 1.1;
+
     color: var(--grey);
+
     text-transform: uppercase;
 }
 
@@ -74,7 +91,7 @@ body {
     font-family: "Times New Roman", Times, serif;
     font-size: 18px;
     font-weight: 400;
-    line-height: 1.1;
+    line-height: 1.05;
 }
 
 .header-info {
@@ -82,38 +99,34 @@ body {
 
     font-family: "Courier New", Courier, monospace;
     font-size: 11px;
-    line-height: 1.45;
+    line-height: 1.4;
+
     text-align: right;
+
     color: var(--grey);
 }
 
+
 /* =========================================================
-   MAIN
+   MAIN / MAP
    ========================================================= */
 
 main {
+    position: fixed;
+
+    top: var(--header-height);
+    right: 0;
+    bottom: var(--filter-height);
+    left: 0;
+
     width: 100%;
-    min-height: calc(100vh - 76px);
-
-    display: flex;
-    flex-direction: column;
 }
-
-/* =========================================================
-   MAP
-   ========================================================= */
 
 .map-container {
     position: relative;
 
     width: 100%;
-    flex: 1 1 auto;
-
-    /*
-     * El mapa tiene su propia zona.
-     * Así las obras no pueden invadir header ni filtros.
-     */
-    min-height: 620px;
+    height: 100%;
 
     overflow: hidden;
 }
@@ -126,6 +139,7 @@ main {
     height: 100%;
 
     z-index: 1;
+
     pointer-events: none;
 }
 
@@ -136,19 +150,23 @@ main {
     z-index: 5;
 }
 
+
 /* =========================================================
-   ARTWORKS
+   ARTWORK
    ========================================================= */
 
 .artwork-card {
     position: absolute;
 
-    width: 175px;
-
     /*
-     * La posición exacta la controla JS.
+     * Más grande que la versión anterior.
+     * La imagen seguirá siendo pequeña en reposo.
      */
-    transform: translate(-50%, -50%);
+    width: 190px;
+
+    transform:
+        translate(-50%, -50%)
+        translate3d(var(--move-x), var(--move-y), 0);
 
     display: flex;
     flex-direction: column;
@@ -156,17 +174,16 @@ main {
 
     cursor: pointer;
 
-    /*
-     * El movimiento se hace mediante variables CSS
-     * actualizadas por JS.
-     */
-    --drift-x: 0px;
-    --drift-y: 0px;
+    --move-x: 0px;
+    --move-y: 0px;
+
+    z-index: 5;
 
     transition:
-        left 700ms cubic-bezier(0.22, 1, 0.36, 1),
-        top 700ms cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 500ms ease;
+        left 850ms cubic-bezier(0.22, 1, 0.36, 1),
+        top 850ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 500ms ease,
+        transform 500ms ease;
 }
 
 .artwork-card.is-hidden {
@@ -174,13 +191,19 @@ main {
     pointer-events: none;
 }
 
+
+/*
+ * Cuando la obra está siendo inspeccionada:
+ * desaparece su movimiento.
+ */
+
 .artwork-card.is-still {
-    /*
-     * No hay movimiento cuando está siendo inspeccionada.
-     */
-    --drift-x: 0px !important;
-    --drift-y: 0px !important;
+    --move-x: 0px !important;
+    --move-y: 0px !important;
+
+    z-index: 50;
 }
+
 
 /* =========================================================
    IMAGE
@@ -189,135 +212,160 @@ main {
 .artwork-image-wrap {
     position: relative;
 
-    width: 86px;
-    height: 86px;
+    width: 105px;
+    height: 105px;
 
     display: flex;
-    justify-content: center;
     align-items: center;
-
-    flex-shrink: 0;
+    justify-content: center;
 }
 
 .artwork-image {
     display: block;
 
-    width: 86px;
-    height: 86px;
+    width: 105px;
+    height: 105px;
 
     object-fit: contain;
 
-    transform:
-        translate3d(var(--drift-x), var(--drift-y), 0)
-        scale(1);
-
-    transform-origin: center center;
+    user-select: none;
+    -webkit-user-drag: none;
 
     transition:
-        width 400ms cubic-bezier(0.22, 1, 0.36, 1),
-        height 400ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+        width 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        height 380ms cubic-bezier(0.22, 1, 0.36, 1);
 
     position: relative;
+
     z-index: 2;
 }
 
-/*
- * Desktop:
- * al hacer hover la miniatura recupera aproximadamente
- * las dimensiones que tenía anteriormente.
- */
+
+/* =========================================================
+   DESKTOP HOVER
+   ========================================================= */
+
 @media (hover: hover) and (pointer: fine) {
 
     .artwork-card:hover {
-        z-index: 30;
+        z-index: 50;
+
+        --move-x: 0px;
+        --move-y: 0px;
     }
 
     .artwork-card:hover .artwork-image {
-        width: 175px;
-        height: 175px;
-
-        transform: translate3d(0, 0, 0);
-    }
-
-    .artwork-card:hover {
-        --drift-x: 0px;
-        --drift-y: 0px;
+        width: 190px;
+        height: 190px;
     }
 }
 
+
 /* =========================================================
-   INFO BOX
+   TITLE UNDER ARTWORK
+   ========================================================= */
+
+.artwork-title {
+    width: 100%;
+
+    margin-top: 8px;
+
+    text-align: center;
+
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.1;
+
+    color: var(--black);
+
+    /*
+     * El título está siempre presente,
+     * como en la versión anterior.
+     */
+    opacity: 1;
+
+    transition: opacity 250ms ease;
+}
+
+
+/* =========================================================
+   INFORMATION BOX
    ========================================================= */
 
 .artwork-info {
-    width: 100%;
+    position: fixed;
 
-    margin-top: 11px;
-    padding: 10px 11px 11px 11px;
+    right: 22px;
+    bottom: calc(var(--filter-height) + 17px);
 
-    background: var(--white);
+    width: 285px;
 
-    border: 1px solid rgba(23, 23, 21, 0.13);
+    padding: 12px 13px 13px 13px;
 
-    text-align: left;
+    background: var(--background);
+
+    border: 1px solid rgba(23, 23, 21, 0.18);
+
+    z-index: 90;
 
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 
-    transform: translateY(-3px);
+    transform: translateY(5px);
 
     transition:
         opacity 220ms ease,
-        transform 220ms ease,
-        visibility 220ms ease;
-
-    position: relative;
-    z-index: 10;
+        visibility 220ms ease,
+        transform 220ms ease;
 }
 
-@media (hover: hover) and (pointer: fine) {
-
-    .artwork-card:hover .artwork-info {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-}
-
-/*
- * Mobile:
- * la caja se abre con tap.
- */
-.artwork-card.is-open .artwork-info {
+.artwork-info.visible {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+
     transform: translateY(0);
 }
 
+
+/* =========================================================
+   INFO CONTENT
+   ========================================================= */
+
+.info-label {
+    margin-bottom: 5px;
+
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10px;
+    line-height: 1;
+
+    color: var(--grey);
+}
+
 .info-title {
-    margin: 0 18px 9px 0;
+    margin: 0 0 10px 0;
 
     font-family: "Times New Roman", Times, serif;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
-    line-height: 1.15;
+    line-height: 1.1;
 }
 
 .info-emotions {
     display: flex;
     flex-direction: column;
+
     gap: 3px;
 }
 
 .emotion-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
     align-items: baseline;
+    justify-content: space-between;
 
-    column-gap: 10px;
+    gap: 15px;
 
     font-family: "Courier New", Courier, monospace;
     font-size: 11px;
@@ -330,16 +378,7 @@ main {
 
 .emotion-value {
     color: var(--black);
-    text-align: right;
-}
-
-/*
- * Línea de color diminuta.
- */
-.emotion-row::before {
-    content: "";
-
-    position: absolute;
+    white-space: nowrap;
 }
 
 .emotion-indicator {
@@ -348,13 +387,14 @@ main {
     width: 6px;
     height: 6px;
 
-    margin-right: 5px;
+    margin-right: 6px;
 
-    vertical-align: middle;
+    flex-shrink: 0;
 }
 
+
 /* =========================================================
-   MOBILE CLOSE
+   CLOSE
    ========================================================= */
 
 .info-close {
@@ -363,7 +403,7 @@ main {
     position: absolute;
 
     top: 7px;
-    right: 8px;
+    right: 9px;
 
     width: 18px;
     height: 18px;
@@ -384,36 +424,32 @@ main {
     cursor: pointer;
 }
 
-@media (max-width: 700px) {
-
-    .info-close {
-        display: block;
-    }
-}
 
 /* =========================================================
-   FILTERS
+   FILTERS / LEGEND
    ========================================================= */
 
 .emotion-filter {
-    position: relative;
-    z-index: 20;
+    position: fixed;
 
-    flex-shrink: 0;
+    left: 0;
+    bottom: 0;
 
     width: 100%;
+    height: var(--filter-height);
 
-    padding: 14px 22px 17px 22px;
+    padding: 13px 22px 15px 22px;
 
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 
-    column-gap: 19px;
-    row-gap: 5px;
+    gap: 6px 19px;
 
     background: var(--background);
+
+    z-index: 100;
 }
 
 .emotion {
@@ -423,11 +459,15 @@ main {
     margin: 0;
 
     border: 0;
+    outline: none;
+
     background: transparent;
 
-    font-family: "Times New Roman", Times, serif;
-    font-size: 14px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
     font-weight: 400;
+
+    line-height: 1;
 
     color: var(--black);
 
@@ -442,8 +482,9 @@ main {
     font-weight: 700;
 }
 
+
 /* =========================================================
-   COLORES DE INDICADORES
+   EMOTION COLORS
    ========================================================= */
 
 .indicator-alegria {
@@ -478,33 +519,41 @@ main {
     background: var(--tristeza);
 }
 
+
 /* =========================================================
    TABLET
    ========================================================= */
 
 @media (max-width: 1000px) {
 
+    :root {
+        --header-height: 72px;
+        --filter-height: 58px;
+    }
+
     .artwork-card {
-        width: 155px;
+        width: 175px;
     }
 
     .artwork-image-wrap {
-        width: 76px;
-        height: 76px;
+        width: 95px;
+        height: 95px;
     }
 
     .artwork-image {
-        width: 76px;
-        height: 76px;
+        width: 95px;
+        height: 95px;
     }
 
     @media (hover: hover) and (pointer: fine) {
+
         .artwork-card:hover .artwork-image {
-            width: 155px;
-            height: 155px;
+            width: 175px;
+            height: 175px;
         }
     }
 }
+
 
 /* =========================================================
    MOBILE
@@ -512,16 +561,24 @@ main {
 
 @media (max-width: 700px) {
 
+    :root {
+        --header-height: 70px;
+        --filter-height: 76px;
+    }
+
+    body {
+        overflow: hidden;
+    }
+
     .header {
-        min-height: 72px;
+        height: var(--header-height);
 
         padding: 13px 15px 12px 15px;
-
-        gap: 15px;
     }
 
     .eyebrow {
         font-size: 11px;
+        margin-bottom: 4px;
     }
 
     .header h1 {
@@ -530,65 +587,98 @@ main {
 
     .header-info {
         font-size: 9px;
-        line-height: 1.35;
     }
 
-    main {
-        min-height: 0;
-    }
 
-    .map-container {
-        min-height: 720px;
-    }
+    /*
+     * Las obras siguen siendo relativamente pequeñas
+     * pero no diminutas.
+     */
 
     .artwork-card {
-        width: 130px;
+        width: 135px;
+
+        transform:
+            translate(-50%, -50%)
+            translate3d(var(--move-x), var(--move-y), 0);
     }
 
     .artwork-image-wrap {
-        width: 78px;
-        height: 78px;
+        width: 88px;
+        height: 88px;
     }
 
     .artwork-image {
-        width: 78px;
-        height: 78px;
+        width: 88px;
+        height: 88px;
     }
+
+    .artwork-title {
+        margin-top: 6px;
+        font-size: 13px;
+    }
+
 
     /*
-     * En móvil no hacemos el zoom de desktop.
-     * El tap abre la información.
+     * En mobile no hacemos el zoom de hover.
      */
+
     .artwork-card.is-open {
-        z-index: 30;
+        z-index: 50;
+
+        --move-x: 0px;
+        --move-y: 0px;
     }
 
+
+    /*
+     * Panel fijo sobre los filtros.
+     */
+
     .artwork-info {
-        width: 130px;
-        padding: 9px 9px 10px 9px;
-        margin-top: 8px;
+        left: auto;
+        right: 12px;
+
+        bottom: calc(var(--filter-height) + 10px);
+
+        width: min(285px, calc(100vw - 24px));
+
+        padding: 11px 12px 12px 12px;
+    }
+
+    .info-close {
+        display: block;
     }
 
     .info-title {
-        font-size: 13px;
-        margin-bottom: 8px;
+        font-size: 15px;
     }
 
     .emotion-row {
-        font-size: 9px;
+        font-size: 10px;
     }
 
-    .emotion-filter {
-        padding: 12px 12px 15px 12px;
 
-        column-gap: 13px;
-        row-gap: 6px;
+    /*
+     * Filtros recuperan el aspecto ligero.
+     */
+
+    .emotion-filter {
+        height: var(--filter-height);
+
+        padding: 11px 12px 13px 12px;
+
+        gap: 7px 13px;
+
+        justify-content: center;
+        align-content: center;
     }
 
     .emotion {
-        font-size: 13px;
+        font-size: 10px;
     }
 }
+
 
 /* =========================================================
    MOBILE PEQUEÑO
@@ -596,23 +686,35 @@ main {
 
 @media (max-width: 430px) {
 
-    .header {
-        align-items: flex-start;
+    :root {
+        --filter-height: 82px;
     }
 
     .header-info {
         display: none;
     }
 
-    .map-container {
-        min-height: 760px;
+    .artwork-card {
+        width: 125px;
     }
 
-    .artwork-card {
-        width: 120px;
+    .artwork-image-wrap {
+        width: 82px;
+        height: 82px;
+    }
+
+    .artwork-image {
+        width: 82px;
+        height: 82px;
     }
 
     .artwork-info {
-        width: 120px;
+        right: 10px;
+
+        width: calc(100vw - 20px);
+    }
+
+    .emotion {
+        font-size: 9px;
     }
 }
