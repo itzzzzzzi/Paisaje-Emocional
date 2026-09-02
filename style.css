@@ -1,6 +1,5 @@
 :root {
     --background: #f4f1eb;
-    --white: #ffffff;
     --black: #171715;
     --grey: #77736c;
 
@@ -13,8 +12,10 @@
     --miedo: #009800;
     --tristeza: #5152ff;
 
-    --header-height: 76px;
-    --filter-height: 53px;
+    --header-height: 64px;
+    --filter-height: 48px;
+
+    --text-size: 11px;
 }
 
 
@@ -28,18 +29,20 @@
 
 html,
 body {
+    width: 100%;
+    height: 100%;
+
     margin: 0;
     padding: 0;
-    width: 100%;
-    min-height: 100%;
 }
 
 body {
     background: var(--background);
+
     color: var(--black);
 
     font-family: "Times New Roman", Times, serif;
-    font-size: 14px;
+    font-size: var(--text-size);
 
     overflow: hidden;
 }
@@ -51,19 +54,25 @@ body {
 
 .header {
     position: fixed;
+
     top: 0;
     left: 0;
 
     width: 100%;
     height: var(--header-height);
 
-    padding: 17px 22px 15px 22px;
+    padding: 14px 20px 10px;
 
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 
-    background: var(--background);
+    /*
+     * IMPORTANTE:
+     * no background.
+     * El paisaje puede verse detrás.
+     */
+    background: transparent;
 
     z-index: 100;
 }
@@ -73,42 +82,50 @@ body {
 }
 
 .eyebrow {
-    margin: 0 0 5px 0;
+    margin: 0 0 4px;
 
     font-family: "Times New Roman", Times, serif;
-    font-size: 14px;
+
+    font-size: var(--text-size);
     font-weight: 400;
-    line-height: 1.1;
+
+    line-height: 1;
 
     color: var(--grey);
 
-    text-transform: uppercase;
+    text-transform: lowercase;
 }
 
 .header h1 {
     margin: 0;
 
     font-family: "Times New Roman", Times, serif;
-    font-size: 18px;
+
+    font-size: var(--text-size);
     font-weight: 400;
-    line-height: 1.05;
+
+    line-height: 1;
 }
 
 .header-info {
     flex-shrink: 0;
 
     font-family: "Courier New", Courier, monospace;
-    font-size: 11px;
-    line-height: 1.4;
+
+    font-size: var(--text-size);
+
+    line-height: 1;
+
+    color: var(--grey);
 
     text-align: right;
 
-    color: var(--grey);
+    white-space: nowrap;
 }
 
 
 /* =========================================================
-   MAIN / MAP
+   MAIN
    ========================================================= */
 
 main {
@@ -120,7 +137,13 @@ main {
     left: 0;
 
     width: 100%;
+    height: auto;
 }
+
+
+/* =========================================================
+   MAP
+   ========================================================= */
 
 .map-container {
     position: relative;
@@ -133,6 +156,7 @@ main {
 
 #emotionCanvas {
     position: absolute;
+
     inset: 0;
 
     width: 100%;
@@ -145,6 +169,7 @@ main {
 
 #artworkLayer {
     position: absolute;
+
     inset: 0;
 
     z-index: 5;
@@ -152,21 +177,29 @@ main {
 
 
 /* =========================================================
-   ARTWORK
+   ARTWORK CARD
    ========================================================= */
 
 .artwork-card {
     position: absolute;
 
-    /*
-     * Más grande que la versión anterior.
-     * La imagen seguirá siendo pequeña en reposo.
-     */
-    width: 190px;
+    width: 180px;
 
+    /*
+     * left/top son las posiciones del paisaje.
+     * --move-x / --move-y son el pequeño movimiento
+     * orgánico continuo.
+     */
     transform:
         translate(-50%, -50%)
-        translate3d(var(--move-x), var(--move-y), 0);
+        translate3d(
+            var(--move-x),
+            var(--move-y),
+            0
+        );
+
+    --move-x: 0px;
+    --move-y: 0px;
 
     display: flex;
     flex-direction: column;
@@ -174,32 +207,28 @@ main {
 
     cursor: pointer;
 
-    --move-x: 0px;
-    --move-y: 0px;
-
     z-index: 5;
 
+    /*
+     * Esta transición es la parte importante:
+     * cuando cambia el filtro, cada obra viaja
+     * hasta su nueva posición.
+     */
     transition:
-        left 850ms cubic-bezier(0.22, 1, 0.36, 1),
-        top 850ms cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 500ms ease,
-        transform 500ms ease;
+        left 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+        top 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 700ms ease;
 }
 
 .artwork-card.is-hidden {
     opacity: 0;
+
     pointer-events: none;
 }
 
-
-/*
- * Cuando la obra está siendo inspeccionada:
- * desaparece su movimiento.
- */
-
 .artwork-card.is-still {
-    --move-x: 0px !important;
-    --move-y: 0px !important;
+    --move-x: 0px;
+    --move-y: 0px;
 
     z-index: 50;
 }
@@ -210,10 +239,8 @@ main {
    ========================================================= */
 
 .artwork-image-wrap {
-    position: relative;
-
-    width: 105px;
-    height: 105px;
+    width: 112px;
+    height: 112px;
 
     display: flex;
     align-items: center;
@@ -221,10 +248,10 @@ main {
 }
 
 .artwork-image {
-    display: block;
+    width: 112px;
+    height: 112px;
 
-    width: 105px;
-    height: 105px;
+    display: block;
 
     object-fit: contain;
 
@@ -232,17 +259,13 @@ main {
     -webkit-user-drag: none;
 
     transition:
-        width 380ms cubic-bezier(0.22, 1, 0.36, 1),
-        height 380ms cubic-bezier(0.22, 1, 0.36, 1);
-
-    position: relative;
-
-    z-index: 2;
+        width 450ms cubic-bezier(0.22, 1, 0.36, 1),
+        height 450ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 
 /* =========================================================
-   DESKTOP HOVER
+   HOVER DESKTOP
    ========================================================= */
 
 @media (hover: hover) and (pointer: fine) {
@@ -255,37 +278,54 @@ main {
     }
 
     .artwork-card:hover .artwork-image {
-        width: 190px;
-        height: 190px;
+        width: 180px;
+        height: 180px;
     }
 }
 
 
 /* =========================================================
-   TITLE UNDER ARTWORK
+   ARTWORK TITLE
    ========================================================= */
 
 .artwork-title {
     width: 100%;
 
-    margin-top: 8px;
+    margin-top: 7px;
+
+    font-family: "Times New Roman", Times, serif;
+
+    font-size: var(--text-size);
+    font-weight: 400;
+
+    line-height: 1.05;
 
     text-align: center;
 
-    font-family: "Times New Roman", Times, serif;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.1;
+    opacity: 0;
 
-    color: var(--black);
+    transform: translateY(-3px);
 
-    /*
-     * El título está siempre presente,
-     * como en la versión anterior.
-     */
+    transition:
+        opacity 250ms ease,
+        transform 250ms ease;
+
+    pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .artwork-card:hover .artwork-title {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+.artwork-card.is-open .artwork-title {
     opacity: 1;
 
-    transition: opacity 250ms ease;
+    transform: translateY(0);
 }
 
 
@@ -296,13 +336,17 @@ main {
 .artwork-info {
     position: fixed;
 
-    right: 22px;
-    bottom: calc(var(--filter-height) + 17px);
+    right: 20px;
+    bottom: calc(var(--filter-height) + 15px);
 
-    width: 285px;
+    width: 265px;
 
-    padding: 12px 13px 13px 13px;
+    padding: 11px 13px 12px;
 
+    /*
+     * Mismo color del paisaje.
+     * No blanco.
+     */
     background: var(--background);
 
     border: 1px solid rgba(23, 23, 21, 0.18);
@@ -323,7 +367,9 @@ main {
 
 .artwork-info.visible {
     opacity: 1;
+
     visibility: visible;
+
     pointer-events: auto;
 
     transform: translateY(0);
@@ -331,93 +377,114 @@ main {
 
 
 /* =========================================================
-   INFO CONTENT
+   INFO LABEL
    ========================================================= */
 
 .info-label {
     margin-bottom: 5px;
 
     font-family: "Courier New", Courier, monospace;
-    font-size: 10px;
+
+    font-size: var(--text-size);
+
     line-height: 1;
 
     color: var(--grey);
 }
 
-.info-title {
-    margin: 0 0 10px 0;
+
+/* =========================================================
+   INFO TITLE
+   ========================================================= */
+
+#artworkTitle {
+    margin: 0 20px 10px 0;
 
     font-family: "Times New Roman", Times, serif;
-    font-size: 16px;
+
+    font-size: var(--text-size);
     font-weight: 400;
-    line-height: 1.1;
-}
 
-.info-emotions {
-    display: flex;
-    flex-direction: column;
-
-    gap: 3px;
-}
-
-.emotion-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-
-    gap: 15px;
-
-    font-family: "Courier New", Courier, monospace;
-    font-size: 11px;
-    line-height: 1.2;
-}
-
-.emotion-name {
-    color: var(--grey);
-}
-
-.emotion-value {
-    color: var(--black);
-    white-space: nowrap;
-}
-
-.emotion-indicator {
-    display: inline-block;
-
-    width: 6px;
-    height: 6px;
-
-    margin-right: 6px;
-
-    flex-shrink: 0;
+    line-height: 1.15;
 }
 
 
 /* =========================================================
-   CLOSE
+   EMOTION BARS
    ========================================================= */
 
-.info-close {
-    display: none;
+.info-emotion {
+    margin-bottom: 5px;
+}
 
+.info-emotion:last-child {
+    margin-bottom: 0;
+}
+
+.info-emotion-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: baseline;
+
+    margin-bottom: 2px;
+
+    font-family: "Courier New", Courier, monospace;
+
+    font-size: var(--text-size);
+
+    line-height: 1;
+}
+
+.info-emotion-name {
+    color: var(--grey);
+}
+
+.info-emotion-value {
+    color: var(--black);
+}
+
+.info-bar {
+    width: 100%;
+    height: 3px;
+
+    background: rgba(23, 23, 21, 0.07);
+
+    overflow: hidden;
+}
+
+.info-bar-fill {
+    height: 100%;
+
+    width: 0;
+
+    transition: width 400ms ease;
+}
+
+
+/* =========================================================
+   CLOSE X
+   ========================================================= */
+
+.close-info {
     position: absolute;
 
     top: 7px;
     right: 9px;
 
-    width: 18px;
-    height: 18px;
-
     padding: 0;
     margin: 0;
 
     border: 0;
+
     background: transparent;
 
-    font-family: Arial, sans-serif;
-    font-size: 17px;
-    font-weight: 300;
-    line-height: 18px;
+    font-family: "Courier New", Courier, monospace;
+
+    font-size: var(--text-size);
+    font-weight: 400;
+
+    line-height: 1;
 
     color: var(--black);
 
@@ -426,7 +493,7 @@ main {
 
 
 /* =========================================================
-   FILTERS / LEGEND
+   FILTERS
    ========================================================= */
 
 .emotion-filter {
@@ -438,16 +505,18 @@ main {
     width: 100%;
     height: var(--filter-height);
 
-    padding: 13px 22px 15px 22px;
+    padding: 12px 20px;
 
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    flex-wrap: wrap;
 
-    gap: 6px 19px;
+    gap: 18px;
 
-    background: var(--background);
+    /*
+     * Sin fondo.
+     */
+    background: transparent;
 
     z-index: 100;
 }
@@ -459,12 +528,13 @@ main {
     margin: 0;
 
     border: 0;
-    outline: none;
+    outline: 0;
 
     background: transparent;
 
     font-family: "Courier New", Courier, monospace;
-    font-size: 12px;
+
+    font-size: var(--text-size);
     font-weight: 400;
 
     line-height: 1;
@@ -474,17 +544,14 @@ main {
     cursor: pointer;
 }
 
-.emotion:hover {
-    font-weight: 700;
-}
-
+.emotion:hover,
 .emotion.active {
     font-weight: 700;
 }
 
 
 /* =========================================================
-   EMOTION COLORS
+   COLORES
    ========================================================= */
 
 .indicator-alegria {
@@ -521,161 +588,92 @@ main {
 
 
 /* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 1000px) {
-
-    :root {
-        --header-height: 72px;
-        --filter-height: 58px;
-    }
-
-    .artwork-card {
-        width: 175px;
-    }
-
-    .artwork-image-wrap {
-        width: 95px;
-        height: 95px;
-    }
-
-    .artwork-image {
-        width: 95px;
-        height: 95px;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-
-        .artwork-card:hover .artwork-image {
-            width: 175px;
-            height: 175px;
-        }
-    }
-}
-
-
-/* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
 
     :root {
-        --header-height: 70px;
-        --filter-height: 76px;
-    }
-
-    body {
-        overflow: hidden;
+        --header-height: 55px;
+        --filter-height: 74px;
     }
 
     .header {
         height: var(--header-height);
 
-        padding: 13px 15px 12px 15px;
+        padding: 11px 13px 8px;
     }
 
-    .eyebrow {
-        font-size: 11px;
-        margin-bottom: 4px;
-    }
-
-    .header h1 {
-        font-size: 17px;
-    }
-
+    .eyebrow,
+    .header h1,
     .header-info {
-        font-size: 9px;
-    }
-
-
-    /*
-     * Las obras siguen siendo relativamente pequeñas
-     * pero no diminutas.
-     */
-
-    .artwork-card {
-        width: 135px;
-
-        transform:
-            translate(-50%, -50%)
-            translate3d(var(--move-x), var(--move-y), 0);
-    }
-
-    .artwork-image-wrap {
-        width: 88px;
-        height: 88px;
-    }
-
-    .artwork-image {
-        width: 88px;
-        height: 88px;
-    }
-
-    .artwork-title {
-        margin-top: 6px;
-        font-size: 13px;
-    }
-
-
-    /*
-     * En mobile no hacemos el zoom de hover.
-     */
-
-    .artwork-card.is-open {
-        z-index: 50;
-
-        --move-x: 0px;
-        --move-y: 0px;
-    }
-
-
-    /*
-     * Panel fijo sobre los filtros.
-     */
-
-    .artwork-info {
-        left: auto;
-        right: 12px;
-
-        bottom: calc(var(--filter-height) + 10px);
-
-        width: min(285px, calc(100vw - 24px));
-
-        padding: 11px 12px 12px 12px;
-    }
-
-    .info-close {
-        display: block;
-    }
-
-    .info-title {
-        font-size: 15px;
-    }
-
-    .emotion-row {
         font-size: 10px;
     }
 
+    .header-info {
+        white-space: normal;
+
+        max-width: 155px;
+
+        line-height: 1.1;
+    }
+
+    .artwork-card {
+        width: 140px;
+    }
+
+    .artwork-image-wrap {
+        width: 90px;
+        height: 90px;
+    }
+
+    .artwork-image {
+        width: 90px;
+        height: 90px;
+    }
+
+    .artwork-title {
+        font-size: 10px;
+    }
 
     /*
-     * Filtros recuperan el aspecto ligero.
+     * En mobile el nombre aparece cuando
+     * la obra está abierta.
      */
+
+    .artwork-card.is-open .artwork-title {
+        opacity: 1;
+    }
+
+    .artwork-info {
+        right: 10px;
+        bottom: calc(var(--filter-height) + 10px);
+
+        width: calc(100vw - 20px);
+
+        padding: 10px 12px;
+    }
+
+    .info-label,
+    #artworkTitle,
+    .info-emotion-header {
+        font-size: 10px;
+    }
 
     .emotion-filter {
         height: var(--filter-height);
 
-        padding: 11px 12px 13px 12px;
+        padding: 10px 12px;
 
         gap: 7px 13px;
 
-        justify-content: center;
+        flex-wrap: wrap;
+
         align-content: center;
     }
 
     .emotion {
-        font-size: 10px;
+        font-size: 9px;
     }
 }
 
@@ -685,10 +683,6 @@ main {
    ========================================================= */
 
 @media (max-width: 430px) {
-
-    :root {
-        --filter-height: 82px;
-    }
 
     .header-info {
         display: none;
@@ -709,12 +703,6 @@ main {
     }
 
     .artwork-info {
-        right: 10px;
-
         width: calc(100vw - 20px);
-    }
-
-    .emotion {
-        font-size: 9px;
     }
 }
