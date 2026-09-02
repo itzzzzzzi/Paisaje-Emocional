@@ -65,7 +65,7 @@ const artworks = [
 
     {
         title: "Algo se está cocinando",
-        image: "images/algo-se-esta-cocinando.jpg",
+        image: "images/algo-se-esta-cocinando.avif",
         emotions: {
             "Alegría": 7.18,
             "Confianza": 15.56,
@@ -80,7 +80,7 @@ const artworks = [
 
     {
         title: "Aprender a volar",
-        image: "images/aprender-a-volar.jpg",
+        image: "images/aprender-a-volar.avif",
         emotions: {
             "Alegría": 10.14,
             "Confianza": 17.05,
@@ -95,7 +95,7 @@ const artworks = [
 
     {
         title: "Baobab",
-        image: "images/baobab.jpg",
+        image: "images/baobab.avif",
         emotions: {
             "Alegría": 12.03,
             "Confianza": 15.64,
@@ -110,7 +110,7 @@ const artworks = [
 
     {
         title: "Belleza en las pequeñas cosas",
-        image: "images/belleza-en-las-pequenas-cosas.jpg",
+        image: "images/belleza-en-las-pequenas-cosas.avif",
         emotions: {
             "Alegría": 17.74,
             "Confianza": 19.68,
@@ -125,7 +125,7 @@ const artworks = [
 
     {
         title: "Bonito lugar donde descansar",
-        image: "images/bonito-lugar-donde-descansar.jpg",
+        image: "images/bonito-lugar-donde-descansar.avif",
         emotions: {
             "Alegría": 14.02,
             "Confianza": 17.11,
@@ -140,7 +140,7 @@ const artworks = [
 
     {
         title: "Buen viaje",
-        image: "images/buen-viaje.jpg",
+        image: "images/buen-viaje.avif",
         emotions: {
             "Alegría": 20.69,
             "Confianza": 14.91,
