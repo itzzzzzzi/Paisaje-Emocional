@@ -1,6 +1,5 @@
 /* =========================================================
    PAISAJE EMOCIONAL
-   Silvia & The Spyglass / Arte y Neurociencia II
    ========================================================= */
 
 
@@ -25,6 +24,7 @@ const emotions = [
    ========================================================= */
 
 const artworks = [
+
     {
         title: "Algo se está cocinando",
         image: "images/algo-se-esta-cocinando.avif",
@@ -171,11 +171,14 @@ const emotionColors = {
 
 
 /* =========================================================
-   ELEMENTOS
+   DOM
    ========================================================= */
 
-const canvas = document.getElementById("emotionCanvas");
-const ctx = canvas.getContext("2d");
+const canvas =
+    document.getElementById("emotionCanvas");
+
+const ctx =
+    canvas.getContext("2d");
 
 const mapContainer =
     document.querySelector(".map-container");
@@ -186,12 +189,26 @@ const artworkLayer =
 const filterButtons =
     document.querySelectorAll(".emotion");
 
+const infoPanel =
+    document.getElementById("artworkInfo");
+
+const infoTitle =
+    document.getElementById("artworkTitle");
+
+const emotionValues =
+    document.getElementById("emotionValues");
+
+const closeInfo =
+    document.getElementById("closeInfo");
+
 
 /* =========================================================
-   ESTADO
+   STATE
    ========================================================= */
 
 let currentFilter = "all";
+
+let focusedArtwork = null;
 
 let cards = [];
 
@@ -200,43 +217,70 @@ let particles = [];
 let canvasWidth = 0;
 let canvasHeight = 0;
 
-let animationFrame;
+let resizeTimeout;
 
 
 /* =========================================================
-   UTILIDADES
+   UTILITIES
    ========================================================= */
 
 function isMobile() {
+
     return window.matchMedia(
         "(max-width: 700px)"
     ).matches;
 }
 
 
-function slugifyEmotion(emotion) {
+function clamp(
+    value,
+    min,
+    max
+) {
+
+    return Math.max(
+        min,
+        Math.min(
+            max,
+            value
+        )
+    );
+}
+
+
+function slugifyEmotion(
+    emotion
+) {
+
     return emotion
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, "-");
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            "-"
+        );
 }
 
 
+/*
+ * Random determinista.
+ * Permite que las posiciones sean siempre
+ * iguales al recargar.
+ */
+
 function seededRandom(seed) {
+
     const x =
-        Math.sin(seed * 12.9898) *
+        Math.sin(
+            seed * 12.9898
+        ) *
         43758.5453;
 
     return x - Math.floor(x);
-}
-
-
-function clamp(value, min, max) {
-    return Math.max(
-        min,
-        Math.min(max, value)
-    );
 }
 
 
@@ -249,18 +293,22 @@ function resizeCanvas() {
     const rect =
         mapContainer.getBoundingClientRect();
 
-    canvasWidth = Math.max(
-        1,
-        rect.width
-    );
+    canvasWidth =
+        Math.max(
+            1,
+            rect.width
+        );
 
-    canvasHeight = Math.max(
-        1,
-        rect.height
-    );
+    canvasHeight =
+        Math.max(
+            1,
+            rect.height
+        );
+
 
     const dpr =
         window.devicePixelRatio || 1;
+
 
     canvas.width =
         canvasWidth * dpr;
@@ -268,11 +316,13 @@ function resizeCanvas() {
     canvas.height =
         canvasHeight * dpr;
 
+
     canvas.style.width =
         `${canvasWidth}px`;
 
     canvas.style.height =
         `${canvasHeight}px`;
+
 
     ctx.setTransform(
         dpr,
@@ -282,182 +332,230 @@ function resizeCanvas() {
         0,
         0
     );
-
-    createParticles();
 }
 
 
 /* =========================================================
-   POSICIONES ORGÁNICAS
+   POSICIONES ORIGINALES
    =========================================================
    
-   No hay grid.
-   
-   Las posiciones se generan alrededor de varios
-   "campos" dentro del espacio.
-   
-   Cuando se filtra:
-   - se ordenan por porcentaje
-   - pero se mantienen posiciones orgánicas
-   - el orden determina la zona general que ocupa cada obra
+   Estas son las "casas" originales de cada obra.
+
+   No son una grid.
+   Cada obra tiene una posición propia.
    ========================================================= */
 
-function generateOrganicPositions(items) {
+function getOriginalPosition(
+    index
+) {
 
-    const mobile = isMobile();
+    const desktop = [
+        { x: 13, y: 22 },
+        { x: 35, y: 17 },
+        { x: 61, y: 23 },
+        { x: 86, y: 19 },
 
-    const positions = [];
+        { x: 20, y: 57 },
+        { x: 49, y: 45 },
+        { x: 76, y: 63 },
 
-    const count = items.length;
-
-
-    /*
-     * Anchuras de seguridad.
-     */
-
-    const minX = mobile ? 14 : 9;
-    const maxX = mobile ? 86 : 91;
-
-    const minY = mobile ? 13 : 14;
-    const maxY = mobile ? 82 : 84;
+        { x: 31, y: 79 },
+        { x: 59, y: 76 },
+        { x: 88, y: 78 }
+    ];
 
 
-    /*
-     * Número de "zonas".
-     *
-     * No son columnas visibles.
-     * Solo sirven para distribuir las obras.
-     */
+    const mobile = [
+        { x: 23, y: 18 },
+        { x: 75, y: 18 },
 
-    const zones = mobile
-        ? [
-            { x: 24, y: 20 },
-            { x: 74, y: 23 },
-            { x: 20, y: 50 },
-            { x: 78, y: 48 },
-            { x: 27, y: 76 },
-            { x: 72, y: 73 },
-            { x: 50, y: 35 },
-            { x: 50, y: 68 }
-        ]
-        : [
-            { x: 13, y: 22 },
-            { x: 35, y: 16 },
-            { x: 61, y: 21 },
-            { x: 86, y: 17 },
+        { x: 18, y: 43 },
+        { x: 78, y: 39 },
 
-            { x: 20, y: 52 },
-            { x: 47, y: 43 },
-            { x: 74, y: 52 },
+        { x: 28, y: 66 },
+        { x: 69, y: 64 },
 
-            { x: 30, y: 78 },
-            { x: 59, y: 72 },
-            { x: 84, y: 77 },
+        { x: 48, y: 83 },
+        { x: 88, y: 82 }
+    ];
 
-            { x: 48, y: 27 },
-            { x: 68, y: 72 }
+
+    const positions =
+        isMobile()
+            ? mobile
+            : desktop;
+
+
+    const position =
+        positions[
+            index % positions.length
         ];
 
 
-    /*
-     * Si hay filtro, el orden de los elementos
-     * ya viene de mayor → menor.
-     *
-     * Asignamos progresivamente las zonas,
-     * pero mezclamos ligeramente su posición.
-     */
-
-    items.forEach((item, index) => {
-
-        const zone =
-            zones[index % zones.length];
-
-        const seed =
-            item.originalIndex * 9187 +
-            index * 173;
+    return {
+        x: position.x,
+        y: position.y
+    };
+}
 
 
-        /*
-         * Variación suficientemente grande para
-         * evitar cualquier sensación de cuadrícula.
-         */
+/* =========================================================
+   POSICIONES DE FILTRO
+   =========================================================
+   
+   ESTA ES LA PARTE NUEVA IMPORTANTE.
 
-        let spreadX =
-            mobile ? 7 : 8;
+   No usamos columnas rígidas.
 
-        let spreadY =
-            mobile ? 6 : 7;
+   El ranking de la emoción determina una trayectoria
+   general de arriba → abajo.
 
+   Pero cada obra recibe un desplazamiento lateral
+   y vertical diferente, por lo que el resultado
+   sigue siendo orgánico.
+   ========================================================= */
 
-        /*
-         * En listas largas, ampliar el movimiento
-         * de las posiciones.
-         */
+function getFilteredPositions(
+    visibleItems
+) {
 
-        if (count > 8) {
-            spreadX += 3;
-            spreadY += 3;
-        }
-
-
-        let x =
-            zone.x +
-            (seededRandom(seed + 1) - 0.5) *
-            spreadX *
-            2;
-
-        let y =
-            zone.y +
-            (seededRandom(seed + 2) - 0.5) *
-            spreadY *
-            2;
+    const count =
+        visibleItems.length;
 
 
-        /*
-         * Límites para que nunca entren en
-         * header o filtros.
-         */
-
-        x = clamp(x, minX, maxX);
-        y = clamp(y, minY, maxY);
+    const positions = [];
 
 
-        positions.push({
-            x,
-            y
-        });
-    });
+    if (count === 0) {
+        return positions;
+    }
 
 
     /*
-     * En "todas" queremos todavía más libertad.
+     * Área segura.
      *
-     * Se añade una pequeña redistribución basada
-     * en el índice original.
+     * Nunca llega hasta header/filtros porque
+     * el propio map-container ya está entre ellos.
      */
 
-    if (currentFilter === "all") {
+    const minY =
+        isMobile() ? 15 : 13;
 
-        positions.forEach((position, index) => {
+    const maxY =
+        isMobile() ? 84 : 86;
+
+
+    const minX =
+        isMobile() ? 14 : 9;
+
+    const maxX =
+        isMobile() ? 86 : 91;
+
+
+    /*
+     * El "camino" va de arriba hacia abajo.
+     *
+     * Pero la curva hace que no parezca una lista.
+     */
+
+    visibleItems.forEach(
+        (item, rank) => {
+
+            const normalized =
+                count === 1
+                    ? 0.5
+                    : rank / (count - 1);
+
+
+            /*
+             * Trayectoria diagonal/ondulada.
+             */
+
+            const baseY =
+                minY +
+                normalized *
+                (maxY - minY);
+
+
+            const wave =
+                Math.sin(
+                    normalized *
+                    Math.PI *
+                    2.4
+                ) *
+                (isMobile() ? 9 : 13);
+
+
+            /*
+             * La posición X no aumenta simplemente
+             * de izquierda a derecha.
+             *
+             * Se mueve orgánicamente por el espacio.
+             */
 
             const seed =
-                index * 731;
+                item.originalIndex *
+                8173 +
+                rank *
+                127;
 
-            position.x = clamp(
-                position.x +
-                (seededRandom(seed + 10) - 0.5) * 5,
-                minX,
-                maxX
-            );
 
-            position.y = clamp(
-                position.y +
-                (seededRandom(seed + 11) - 0.5) * 5,
-                minY,
-                maxY
-            );
-        });
-    }
+            const randomX =
+                (
+                    seededRandom(
+                        seed + 1
+                    ) -
+                    0.5
+                ) *
+                (isMobile() ? 38 : 50);
+
+
+            const randomY =
+                (
+                    seededRandom(
+                        seed + 2
+                    ) -
+                    0.5
+                ) *
+                (isMobile() ? 8 : 10);
+
+
+            /*
+             * Una trayectoria suave central +
+             * variación individual.
+             */
+
+            const baseX =
+                isMobile()
+                    ? 50
+                    : 50;
+
+
+            const x =
+                clamp(
+                    baseX +
+                    wave +
+                    randomX,
+                    minX,
+                    maxX
+                );
+
+
+            const y =
+                clamp(
+                    baseY +
+                    randomY,
+                    minY,
+                    maxY
+                );
+
+
+            positions.push({
+                x,
+                y
+            });
+        }
+    );
 
 
     return positions;
@@ -465,106 +563,69 @@ function generateOrganicPositions(items) {
 
 
 /* =========================================================
-   CREAR OBRAS
+   CREAR CARDS
    ========================================================= */
 
-function renderArtworks() {
-
-    /*
-     * Guardamos qué card estaba abierta para no
-     * generar estados inconsistentes.
-     */
-
-    cards = [];
+function createArtworks() {
 
     artworkLayer.innerHTML = "";
 
-
-    /*
-     * Filtrar.
-     */
-
-    let visibleArtworks =
-        artworks.map((artwork, index) => ({
-            artwork,
-            originalIndex: index
-        }));
+    cards = [];
 
 
-    if (currentFilter !== "all") {
-
-        visibleArtworks =
-            visibleArtworks
-                .filter(item =>
-                    item.artwork.emotions[
-                        currentFilter
-                    ] > 0
-                )
-                .sort((a, b) =>
-                    b.artwork.emotions[
-                        currentFilter
-                    ] -
-                    a.artwork.emotions[
-                        currentFilter
-                    ]
-                );
-    }
-
-
-    /*
-     * Posiciones orgánicas.
-     */
-
-    const positions =
-        generateOrganicPositions(
-            visibleArtworks
-        );
-
-
-    /*
-     * Crear DOM.
-     */
-
-    visibleArtworks.forEach(
-        (item, index) => {
-
-            const artwork =
-                item.artwork;
+    artworks.forEach(
+        (artwork, index) => {
 
             const card =
-                document.createElement("article");
+                document.createElement(
+                    "article"
+                );
 
             card.className =
                 "artwork-card";
 
+
             card.dataset.index =
-                item.originalIndex;
+                index;
 
 
-            /*
-             * Posición.
-             */
+            const original =
+                getOriginalPosition(
+                    index
+                );
+
+
+            card.dataset.originalX =
+                original.x;
+
+            card.dataset.originalY =
+                original.y;
+
 
             card.style.left =
-                `${positions[index].x}%`;
+                `${original.x}%`;
 
             card.style.top =
-                `${positions[index].y}%`;
+                `${original.y}%`;
 
 
             /*
-             * Imagen.
+             * IMAGE
              */
 
             const imageWrap =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             imageWrap.className =
                 "artwork-image-wrap";
 
 
             const image =
-                document.createElement("img");
+                document.createElement(
+                    "img"
+                );
 
             image.className =
                 "artwork-image";
@@ -575,108 +636,103 @@ function renderArtworks() {
             image.alt =
                 artwork.title;
 
-            image.draggable = false;
+            image.draggable =
+                false;
 
 
-            imageWrap.appendChild(image);
+            imageWrap.appendChild(
+                image
+            );
 
 
             /*
-             * Nombre debajo.
+             * TITLE
              */
 
-            const artworkTitle =
-                document.createElement("div");
+            const title =
+                document.createElement(
+                    "div"
+                );
 
-            artworkTitle.className =
+            title.className =
                 "artwork-title";
 
-            artworkTitle.textContent =
+            title.textContent =
                 artwork.title;
 
 
-            card.appendChild(imageWrap);
-
             card.appendChild(
-                artworkTitle
+                imageWrap
             );
 
-            artworkLayer.appendChild(card);
+            card.appendChild(
+                title
+            );
 
 
-            /*
-             * Referencia.
-             */
+            artworkLayer.appendChild(
+                card
+            );
+
 
             cards.push({
                 element: card,
                 artwork,
-                originalIndex:
-                    item.originalIndex,
-                position:
-                    positions[index],
-                image
+                index,
+                original,
+                target: original
             });
 
 
-            /*
-             * Movimiento individual.
-             */
-
-            setupOrganicMovement(
+            setupCardInteraction(
                 card,
+                artwork,
                 index
             );
 
 
-            /*
-             * Interacción.
-             */
-
-            setupInteraction(
+            setupArtworkMovement(
                 card,
-                artwork
+                index
             );
         }
     );
-
-
-    createParticles();
 }
 
 
 /* =========================================================
-   MOVIMIENTO ORGÁNICO
-   =========================================================
-   
-   Cada cuadro se mueve de forma independiente.
-   No hay una órbita ni una trayectoria rígida.
+   MOVIMIENTO DE CADA OBRA
    ========================================================= */
 
-function setupOrganicMovement(
+function setupArtworkMovement(
     card,
     index
 ) {
 
     const seed =
-        index * 1937 +
-        Math.random() * 1000;
+        index * 1937;
 
 
     const amplitudeX =
         isMobile()
-            ? 4 + seededRandom(seed + 1) * 5
-            : 5 + seededRandom(seed + 1) * 8;
+            ? 4 +
+              seededRandom(seed + 1) * 4
+            : 5 +
+              seededRandom(seed + 1) * 7;
+
 
     const amplitudeY =
         isMobile()
-            ? 4 + seededRandom(seed + 2) * 5
-            : 5 + seededRandom(seed + 2) * 8;
+            ? 4 +
+              seededRandom(seed + 2) * 4
+            : 5 +
+              seededRandom(seed + 2) * 7;
 
 
-    const duration =
-        6500 +
-        seededRandom(seed + 3) * 5500;
+    const speed =
+        0.00010 +
+        seededRandom(seed + 3) *
+        0.00008;
 
 
     const phase =
@@ -685,17 +741,11 @@ function setupOrganicMovement(
         2;
 
 
-    const startTime =
-        performance.now() +
-        seededRandom(seed + 5) * 3000;
+    const start =
+        performance.now();
 
 
-    function move(time) {
-
-        /*
-         * Si la card está siendo inspeccionada,
-         * no se mueve.
-         */
+    function animate(time) {
 
         if (
             !card.classList.contains(
@@ -703,46 +753,39 @@ function setupOrganicMovement(
             )
         ) {
 
-            const elapsed =
-                time - startTime;
-
             const t =
-                elapsed / duration;
+                (time - start) *
+                speed;
 
-
-            /*
-             * Dos ondas diferentes producen un
-             * desplazamiento más natural.
-             */
 
             const x =
                 Math.sin(
-                    t * Math.PI * 2 +
+                    t +
                     phase
                 ) *
                 amplitudeX
                 +
                 Math.sin(
-                    t * Math.PI * 4.7 +
-                    phase * 1.7
+                    t * 2.17 +
+                    phase * 1.4
                 ) *
                 amplitudeX *
-                0.22;
+                0.18;
 
 
             const y =
                 Math.cos(
-                    t * Math.PI * 2.3 +
+                    t * 0.91 +
                     phase
                 ) *
                 amplitudeY
                 +
                 Math.sin(
-                    t * Math.PI * 3.8 +
-                    phase * 0.8
+                    t * 1.73 +
+                    phase
                 ) *
                 amplitudeY *
-                0.25;
+                0.20;
 
 
             card.style.setProperty(
@@ -757,11 +800,15 @@ function setupOrganicMovement(
         }
 
 
-        requestAnimationFrame(move);
+        requestAnimationFrame(
+            animate
+        );
     }
 
 
-    requestAnimationFrame(move);
+    requestAnimationFrame(
+        animate
+    );
 }
 
 
@@ -769,29 +816,37 @@ function setupOrganicMovement(
    INTERACCIÓN
    ========================================================= */
 
-function setupInteraction(
+function setupCardInteraction(
     card,
-    artwork
+    artwork,
+    index
 ) {
 
     /*
-     * DESKTOP
+     * DESKTOP HOVER
      */
 
     card.addEventListener(
         "mouseenter",
         () => {
 
-            if (!isMobile()) {
-
-                card.classList.add(
-                    "is-still"
-                );
-
-                showInfo(
-                    artwork
-                );
+            if (isMobile()) {
+                return;
             }
+
+
+            focusedArtwork =
+                index;
+
+
+            card.classList.add(
+                "is-still"
+            );
+
+
+            showInfo(
+                artwork
+            );
         }
     );
 
@@ -800,14 +855,21 @@ function setupInteraction(
         "mouseleave",
         () => {
 
-            if (!isMobile()) {
-
-                card.classList.remove(
-                    "is-still"
-                );
-
-                hideInfo();
+            if (isMobile()) {
+                return;
             }
+
+
+            focusedArtwork =
+                null;
+
+
+            card.classList.remove(
+                "is-still"
+            );
+
+
+            hideInfo();
         }
     );
 
@@ -821,8 +883,9 @@ function setupInteraction(
         event => {
 
             /*
-             * Desktop:
-             * click = web.
+             * DESKTOP:
+             * click lleva directamente
+             * a la obra.
              */
 
             if (!isMobile()) {
@@ -835,10 +898,13 @@ function setupInteraction(
 
 
             /*
-             * Mobile:
+             * MOBILE:
              *
-             * primer tap → info
-             * segundo tap → web
+             * primer tap:
+             * información
+             *
+             * segundo tap:
+             * link
              */
 
             if (
@@ -850,9 +916,6 @@ function setupInteraction(
                 event.preventDefault();
                 event.stopPropagation();
 
-                /*
-                 * Cerrar otras.
-                 */
 
                 cards.forEach(
                     other => {
@@ -870,6 +933,10 @@ function setupInteraction(
                             );
                     }
                 );
+
+
+                focusedArtwork =
+                    index;
 
 
                 card.classList.add(
@@ -899,45 +966,17 @@ function setupInteraction(
    INFO PANEL
    ========================================================= */
 
-function showInfo(artwork) {
+function showInfo(
+    artwork
+) {
 
-    const panel =
-        document.getElementById(
-            "artworkInfo"
-        );
-
-    if (!panel) {
-        return;
-    }
-
-
-    /*
-     * El HTML original tenía estos elementos.
-     * Los rellenamos dinámicamente.
-     */
-
-    const title =
-        document.getElementById(
-            "artworkTitle"
-        );
-
-    const values =
-        document.getElementById(
-            "emotionValues"
-        );
-
-
-    title.textContent =
+    infoTitle.textContent =
         artwork.title;
 
 
-    values.innerHTML = "";
+    emotionValues.innerHTML =
+        "";
 
-
-    /*
-     * Si hay filtro, solo mostramos
-     * esa emoción.
-     */
 
     const emotionsToShow =
         currentFilter === "all"
@@ -968,7 +1007,20 @@ function showInfo(artwork) {
                 );
 
             row.className =
-                "emotion-row";
+                "info-emotion";
+
+
+            /*
+             * HEADER
+             */
+
+            const header =
+                document.createElement(
+                    "div"
+                );
+
+            header.className =
+                "info-emotion-header";
 
 
             const name =
@@ -977,30 +1029,10 @@ function showInfo(artwork) {
                 );
 
             name.className =
-                "emotion-name";
+                "info-emotion-name";
 
-
-            const indicator =
-                document.createElement(
-                    "span"
-                );
-
-            indicator.className =
-                "emotion-indicator indicator-" +
-                slugifyEmotion(
-                    emotion
-                );
-
-
-            name.appendChild(
-                indicator
-            );
-
-            name.appendChild(
-                document.createTextNode(
-                    emotion.toLowerCase()
-                )
-            );
+            name.textContent =
+                emotion.toLowerCase();
 
 
             const percentage =
@@ -1009,99 +1041,332 @@ function showInfo(artwork) {
                 );
 
             percentage.className =
-                "emotion-value";
+                "info-emotion-value";
 
             percentage.textContent =
                 `${value.toFixed(2)}%`;
 
 
-            row.appendChild(name);
+            header.appendChild(
+                name
+            );
 
-            row.appendChild(
+            header.appendChild(
                 percentage
             );
 
-            values.appendChild(
+
+            /*
+             * BAR
+             */
+
+            const bar =
+                document.createElement(
+                    "div"
+                );
+
+            bar.className =
+                "info-bar";
+
+
+            const fill =
+                document.createElement(
+                    "div"
+                );
+
+            fill.className =
+                "info-bar-fill";
+
+
+            fill.style.background =
+                emotionColors[
+                    emotion
+                ];
+
+
+            /*
+             * La longitud de la barra representa
+             * directamente el porcentaje.
+             */
+
+            fill.style.width =
+                `${value}%`;
+
+
+            bar.appendChild(
+                fill
+            );
+
+
+            row.appendChild(
+                header
+            );
+
+            row.appendChild(
+                bar
+            );
+
+
+            emotionValues.appendChild(
                 row
             );
         }
     );
 
 
-    /*
-     * Mostrar.
-     */
-
-    panel.classList.add(
+    infoPanel.classList.add(
         "visible"
     );
 }
 
 
 /* =========================================================
-   OCULTAR INFO
+   HIDE INFO
    ========================================================= */
 
 function hideInfo() {
 
-    const panel =
-        document.getElementById(
-            "artworkInfo"
-        );
-
-    if (!panel) {
-        return;
-    }
-
-    panel.classList.remove(
+    infoPanel.classList.remove(
         "visible"
     );
 }
 
 
 /* =========================================================
-   CERRAR INFO MOBILE
+   CLOSE MOBILE
    ========================================================= */
 
-const closeInfo =
-    document.getElementById(
-        "closeInfo"
-    );
+closeInfo.addEventListener(
+    "click",
+    event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
 
 
-if (closeInfo) {
+        cards.forEach(
+            card => {
 
-    closeInfo.addEventListener(
-        "click",
-        event => {
+                card.element
+                    .classList
+                    .remove(
+                        "is-open"
+                    );
 
-            event.preventDefault();
+                card.element
+                    .classList
+                    .remove(
+                        "is-still"
+                    );
+            }
+        );
 
-            event.stopPropagation();
 
-            cards.forEach(
-                card => {
+        focusedArtwork =
+            null;
 
-                    card.element.classList
-                        .remove(
-                            "is-open"
-                        );
 
-                    card.element.classList
-                        .remove(
-                            "is-still"
-                        );
-                }
+        hideInfo();
+    }
+);
+
+
+/* =========================================================
+   FILTRO
+   ========================================================= */
+
+function applyFilter(
+    emotion
+) {
+
+    currentFilter =
+        emotion;
+
+
+    /*
+     * Botones
+     */
+
+    filterButtons.forEach(
+        button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.emotion ===
+                emotion
             );
-
-            hideInfo();
         }
     );
+
+
+    /*
+     * Cerrar información.
+     */
+
+    focusedArtwork =
+        null;
+
+    hideInfo();
+
+
+    cards.forEach(
+        card => {
+
+            card.element
+                .classList
+                .remove(
+                    "is-open"
+                );
+
+            card.element
+                .classList
+                .remove(
+                    "is-still"
+                );
+        }
+    );
+
+
+    /*
+     * TODAS
+     *
+     * Volvemos suavemente a la posición
+     * original de cada obra.
+     */
+
+    if (
+        emotion === "all"
+    ) {
+
+        cards.forEach(
+            card => {
+
+                card.element
+                    .classList
+                    .remove(
+                        "is-hidden"
+                    );
+
+
+                card.element.style.left =
+                    `${card.original.x}%`;
+
+                card.element.style.top =
+                    `${card.original.y}%`;
+            }
+        );
+
+
+        createParticles();
+
+        return;
+    }
+
+
+    /*
+     * FILTRO
+     *
+     * Construimos el ranking.
+     */
+
+    const ranked =
+        cards
+            .filter(
+                card =>
+                    card.artwork.emotions[
+                        emotion
+                    ] > 0
+            )
+            .sort(
+                (a, b) =>
+                    b.artwork.emotions[
+                        emotion
+                    ] -
+                    a.artwork.emotions[
+                        emotion
+                    ]
+            );
+
+
+    /*
+     * Calculamos las nuevas posiciones.
+     *
+     * IMPORTANTE:
+     * no cambiamos el DOM.
+     * Cada obra simplemente viaja
+     * a su nuevo lugar.
+     */
+
+    const positions =
+        getFilteredPositions(
+            ranked
+        );
+
+
+    /*
+     * Obras visibles.
+     */
+
+    ranked.forEach(
+        (card, rank) => {
+
+            card.element
+                .classList
+                .remove(
+                    "is-hidden"
+                );
+
+
+            const target =
+                positions[rank];
+
+
+            card.target =
+                target;
+
+
+            card.element.style.left =
+                `${target.x}%`;
+
+            card.element.style.top =
+                `${target.y}%`;
+        }
+    );
+
+
+    /*
+     * Obras con 0% desaparecen.
+     *
+     * No se eliminan:
+     * simplemente desaparecen suavemente.
+     */
+
+    cards.forEach(
+        card => {
+
+            if (
+                card.artwork.emotions[
+                    emotion
+                ] <= 0
+            ) {
+
+                card.element
+                    .classList
+                    .add(
+                        "is-hidden"
+                    );
+            }
+        }
+    );
+
+
+    createParticles();
 }
 
 
 /* =========================================================
-   FILTROS
+   BOTONES
    ========================================================= */
 
 filterButtons.forEach(
@@ -1111,42 +1376,9 @@ filterButtons.forEach(
             "click",
             () => {
 
-                currentFilter =
-                    button.dataset.emotion;
-
-
-                /*
-                 * Estado visual.
-                 */
-
-                filterButtons.forEach(
-                    other => {
-
-                        other.classList.toggle(
-                            "active",
-                            other === button
-                        );
-                    }
+                applyFilter(
+                    button.dataset.emotion
                 );
-
-
-                /*
-                 * Cerramos info.
-                 */
-
-                hideInfo();
-
-
-                /*
-                 * Renderizamos.
-                 *
-                 * Las obras se ordenan según el
-                 * porcentaje de la emoción,
-                 * pero las nuevas posiciones siguen
-                 * siendo orgánicas.
-                 */
-
-                renderArtworks();
             }
         );
     }
@@ -1154,63 +1386,7 @@ filterButtons.forEach(
 
 
 /* =========================================================
-   CLICK FUERA EN MOBILE
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        if (!isMobile()) {
-            return;
-        }
-
-
-        const info =
-            document.getElementById(
-                "artworkInfo"
-            );
-
-
-        if (
-            info &&
-            info.classList.contains(
-                "visible"
-            ) &&
-            !info.contains(event.target) &&
-            !event.target.closest(
-                ".artwork-card"
-            )
-        ) {
-
-            cards.forEach(
-                card => {
-
-                    card.element.classList
-                        .remove(
-                            "is-open"
-                        );
-
-                    card.element.classList
-                        .remove(
-                            "is-still"
-                        );
-                }
-            );
-
-            hideInfo();
-        }
-    }
-);
-
-
-/* =========================================================
    PARTICLES
-   =========================================================
-   
-   1% ≈ 1 punto.
-   
-   Todos los puntos tienen EXACTAMENTE el mismo tamaño.
    ========================================================= */
 
 function createParticles() {
@@ -1222,7 +1398,10 @@ function createParticles() {
         (artwork, artworkIndex) => {
 
             emotions.forEach(
-                (emotion, emotionIndex) => {
+                (
+                    emotion,
+                    emotionIndex
+                ) => {
 
                     const value =
                         artwork.emotions[
@@ -1231,13 +1410,13 @@ function createParticles() {
 
 
                     /*
-                     * 20.69 → 21 puntos
-                     * 38.22 → 38 puntos
-                     * etc.
+                     * 20.69% → 21 puntos.
                      */
 
                     const count =
-                        Math.round(value);
+                        Math.round(
+                            value
+                        );
 
 
                     for (
@@ -1260,6 +1439,11 @@ function createParticles() {
 
                             emotion,
 
+                            /*
+                             * Todos tienen el mismo
+                             * tamaño en drawParticles.
+                             */
+
                             angle:
                                 seededRandom(
                                     seed + 1
@@ -1267,12 +1451,17 @@ function createParticles() {
                                 Math.PI *
                                 2,
 
+                            /*
+                             * En todas:
+                             * muy dispersos.
+                             */
+
                             radius:
-                                25 +
+                                70 +
                                 seededRandom(
                                     seed + 2
                                 ) *
-                                105,
+                                125,
 
                             phase:
                                 seededRandom(
@@ -1282,18 +1471,18 @@ function createParticles() {
                                 2,
 
                             speed:
-                                0.00010 +
+                                0.00008 +
                                 seededRandom(
                                     seed + 4
                                 ) *
-                                0.00018,
+                                0.00012,
 
                             wobble:
-                                3 +
+                                5 +
                                 seededRandom(
                                     seed + 5
                                 ) *
-                                8
+                                9
                         });
                     }
                 }
@@ -1304,36 +1493,49 @@ function createParticles() {
 
 
 /* =========================================================
-   CENTRO DE CADA OBRA
+   CENTRO DE UNA OBRA
    ========================================================= */
 
 function getArtworkCenter(
     artworkIndex
 ) {
 
-    const cardData =
+    const card =
         cards.find(
-            card =>
-                card.originalIndex ===
+            item =>
+                item.index ===
                 artworkIndex
         );
 
 
-    if (!cardData) {
+    if (!card) {
         return null;
     }
 
 
-    const card =
-        cardData.element;
+    /*
+     * Aunque esté oculto, no queremos
+     * dibujar sus puntos.
+     */
+
+    if (
+        card.element.classList
+            .contains(
+                "is-hidden"
+            )
+    ) {
+        return null;
+    }
 
 
     const rect =
-        card.getBoundingClientRect();
+        card.element
+            .getBoundingClientRect();
 
 
     const mapRect =
-        mapContainer.getBoundingClientRect();
+        mapContainer
+            .getBoundingClientRect();
 
 
     return {
@@ -1352,10 +1554,12 @@ function getArtworkCenter(
 
 
 /* =========================================================
-   DIBUJAR PUNTOS
+   PARTICLES ANIMATION
    ========================================================= */
 
-function drawParticles(time) {
+function drawParticles(
+    time
+) {
 
     ctx.clearRect(
         0,
@@ -1369,8 +1573,8 @@ function drawParticles(time) {
         particle => {
 
             /*
-             * Si hay filtro, desaparecen TODOS
-             * los puntos de las demás emociones.
+             * Si hay filtro:
+             * solo la emoción seleccionada.
              */
 
             if (
@@ -1393,10 +1597,66 @@ function drawParticles(time) {
             }
 
 
+            const isFocused =
+                focusedArtwork ===
+                particle.artworkIndex;
+
+
             /*
-             * Movimiento.
+             * =================================================
+             * RADIO
+             * =================================================
              *
-             * No es una órbita perfecta.
+             * TODAS:
+             * puntos muy separados.
+             *
+             * HOVER/TAP:
+             * puntos de esa obra se acercan.
+             *
+             * FILTRO:
+             * también reducimos ligeramente el campo,
+             * porque el paisaje está concentrado.
+             */
+
+            let baseRadius;
+
+
+            if (isFocused) {
+
+                baseRadius =
+                    35 +
+                    seededRandom(
+                        particle.artworkIndex *
+                        10000 +
+                        particle.emotion.length *
+                        100 +
+                        Math.round(
+                            particle.radius
+                        )
+                    ) *
+                    45;
+
+            } else if (
+                currentFilter !== "all"
+            ) {
+
+                baseRadius =
+                    48 +
+                    (
+                        particle.radius -
+                        70
+                    ) *
+                    0.55;
+
+            } else {
+
+                baseRadius =
+                    particle.radius;
+            }
+
+
+            /*
+             * Movimiento orgánico.
              */
 
             const t =
@@ -1410,13 +1670,13 @@ function drawParticles(time) {
                     t +
                     particle.phase
                 ) *
-                0.30;
+                0.32;
 
 
             const radius =
-                particle.radius +
+                baseRadius +
                 Math.sin(
-                    t * 1.41 +
+                    t * 1.37 +
                     particle.phase
                 ) *
                 particle.wobble;
@@ -1424,18 +1684,18 @@ function drawParticles(time) {
 
             const secondaryX =
                 Math.sin(
-                    t * 0.73 +
-                    particle.phase * 1.7
+                    t * 0.71 +
+                    particle.phase * 1.8
                 ) *
-                5;
+                6;
 
 
             const secondaryY =
                 Math.cos(
-                    t * 0.61 +
+                    t * 0.63 +
                     particle.phase
                 ) *
-                5;
+                6;
 
 
             const x =
@@ -1453,27 +1713,14 @@ function drawParticles(time) {
                 secondaryY;
 
 
-            const safeX =
-                clamp(
-                    x,
-                    -40,
-                    canvasWidth + 40
-                );
-
-
-            const safeY =
-                clamp(
-                    y,
-                    -40,
-                    canvasHeight + 40
-                );
-
-
             /*
-             * MUY IMPORTANTE:
+             * =================================================
+             * PUNTO
+             * =================================================
              *
-             * todos exactamente el mismo tamaño
-             * y sin opacity.
+             * EXACTAMENTE EL MISMO TAMAÑO.
+             *
+             * SIN opacity.
              */
 
             ctx.globalAlpha = 1;
@@ -1487,8 +1734,16 @@ function drawParticles(time) {
             ctx.beginPath();
 
             ctx.arc(
-                safeX,
-                safeY,
+                clamp(
+                    x,
+                    -50,
+                    canvasWidth + 50
+                ),
+                clamp(
+                    y,
+                    -50,
+                    canvasHeight + 50
+                ),
                 2,
                 0,
                 Math.PI * 2
@@ -1501,18 +1756,84 @@ function drawParticles(time) {
 
     ctx.globalAlpha = 1;
 
-    animationFrame =
-        requestAnimationFrame(
-            drawParticles
-        );
+
+    requestAnimationFrame(
+        drawParticles
+    );
 }
+
+
+/* =========================================================
+   CLICK FUERA EN MOBILE
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        if (!isMobile()) {
+            return;
+        }
+
+
+        if (
+            !infoPanel.classList
+                .contains(
+                    "visible"
+                )
+        ) {
+            return;
+        }
+
+
+        if (
+            infoPanel.contains(
+                event.target
+            )
+        ) {
+            return;
+        }
+
+
+        if (
+            event.target.closest(
+                ".artwork-card"
+            )
+        ) {
+            return;
+        }
+
+
+        cards.forEach(
+            card => {
+
+                card.element
+                    .classList
+                    .remove(
+                        "is-open"
+                    );
+
+                card.element
+                    .classList
+                    .remove(
+                        "is-still"
+                    );
+            }
+        );
+
+
+        focusedArtwork =
+            null;
+
+
+        hideInfo();
+    }
+);
 
 
 /* =========================================================
    RESIZE
    ========================================================= */
-
-let resizeTimeout;
 
 window.addEventListener(
     "resize",
@@ -1522,34 +1843,69 @@ window.addEventListener(
             resizeTimeout
         );
 
+
         resizeTimeout =
             setTimeout(
                 () => {
 
                     resizeCanvas();
 
-                    renderArtworks();
+
+                    /*
+                     * Recalcular posiciones actuales
+                     * sin cambiar el filtro.
+                     */
+
+                    if (
+                        currentFilter ===
+                        "all"
+                    ) {
+
+                        cards.forEach(
+                            card => {
+
+                                const position =
+                                    getOriginalPosition(
+                                        card.index
+                                    );
+
+
+                                card.original =
+                                    position;
+
+
+                                card.element.style.left =
+                                    `${position.x}%`;
+
+                                card.element.style.top =
+                                    `${position.y}%`;
+                            }
+                        );
+
+                    } else {
+
+                        applyFilter(
+                            currentFilter
+                        );
+                    }
 
                 },
-                150
+                200
             );
     }
 );
 
 
 /* =========================================================
-   INICIALIZACIÓN
+   INIT
    ========================================================= */
 
 resizeCanvas();
 
-renderArtworks();
+createArtworks();
 
-cancelAnimationFrame(
-    animationFrame
+createParticles();
+
+requestAnimationFrame(
+    drawParticles
 );
-
-animationFrame =
-    requestAnimationFrame(
-        drawParticles
-    );
