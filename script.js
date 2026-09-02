@@ -1,12 +1,12 @@
-/* ============================================
+/* =========================================================
    PAISAJE EMOCIONAL
-   Silvia & The Spyglass
-   ============================================ */
+   Silvia & The Spyglass / Arte y Neurociencia II
+   ========================================================= */
 
 
-/* --------------------------------
+/* =========================================================
    EMOCIONES
--------------------------------- */
+   ========================================================= */
 
 const emotions = [
     "Alegría",
@@ -20,44 +20,27 @@ const emotions = [
 ];
 
 
-/* --------------------------------
-   COLORES
-   Se toman directamente de las
-   variables definidas en style.css
--------------------------------- */
-
-const emotionColors = {};
-
-emotions.forEach(emotion => {
-
-    const variableName = {
-        "Alegría": "--alegria",
-        "Confianza": "--confianza",
-        "Curiosidad": "--curiosidad",
-        "Sorpresa": "--sorpresa",
-        "Disgusto": "--disgusto",
-        "Ira": "--ira",
-        "Miedo": "--miedo",
-        "Tristeza": "--tristeza"
-    }[emotion];
-
-    emotionColors[emotion] =
-        getComputedStyle(document.documentElement)
-            .getPropertyValue(variableName)
-            .trim();
-
-});
-
-
-/* --------------------------------
+/* =========================================================
    DATOS DE LAS OBRAS
--------------------------------- */
+   =========================================================
+   
+   El orden de emotions es siempre:
+
+   Alegría
+   Confianza
+   Curiosidad
+   Sorpresa
+   Disgusto
+   Ira
+   Miedo
+   Tristeza
+   ========================================================= */
 
 const artworks = [
-
     {
         title: "Algo se está cocinando",
         image: "images/algo-se-esta-cocinando.avif",
+        link: "https://silviaandthespyglass.com/products/algo-se-esta-cocinando?_pos=28&_sid=cb35938c9&_ss=r",
         emotions: {
             "Alegría": 7.18,
             "Confianza": 15.56,
@@ -73,6 +56,7 @@ const artworks = [
     {
         title: "Aprender a volar",
         image: "images/aprender-a-volar.avif",
+        link: "https://silviaandthespyglass.com/products/aprender-a-volar-1?_pos=19&_sid=8498fca5e&_ss=r",
         emotions: {
             "Alegría": 10.14,
             "Confianza": 17.05,
@@ -88,6 +72,7 @@ const artworks = [
     {
         title: "Baobab",
         image: "images/baobab.avif",
+        link: "https://silviaandthespyglass.com/products/baobab?_pos=13&_sid=9c635ab51&_ss=r",
         emotions: {
             "Alegría": 12.03,
             "Confianza": 15.64,
@@ -103,6 +88,7 @@ const artworks = [
     {
         title: "Belleza en las pequeñas cosas",
         image: "images/belleza-en-las-pequenas-cosas.avif",
+        link: "https://silviaandthespyglass.com/products/beauty-in-the-small-things?_pos=1&_sid=2877ebcde&_ss=r",
         emotions: {
             "Alegría": 17.74,
             "Confianza": 19.68,
@@ -118,6 +104,7 @@ const artworks = [
     {
         title: "Bonito lugar donde descansar",
         image: "images/bonito-lugar-donde-descansar.avif",
+        link: "https://silviaandthespyglass.com/products/escultura-bronce-un-lugar-bonito-donde-descansar?_pos=2&_sid=df7d643de&_ss=r",
         emotions: {
             "Alegría": 14.02,
             "Confianza": 17.11,
@@ -133,6 +120,7 @@ const artworks = [
     {
         title: "Buen viaje",
         image: "images/buen-viaje.avif",
+        link: "https://silviaandthespyglass.com/products/buen-viaje?_pos=24&_sid=ee19582c8&_ss=r",
         emotions: {
             "Alegría": 20.69,
             "Confianza": 14.91,
@@ -148,6 +136,7 @@ const artworks = [
     {
         title: "Compañeros de sueños",
         image: "images/companeros-de-suenos.avif",
+        link: "https://silviaandthespyglass.com/products/companer-s-de-suenos?_pos=6&_sid=e176564db&_ss=r",
         emotions: {
             "Alegría": 7.06,
             "Confianza": 17.56,
@@ -159,894 +148,1055 @@ const artworks = [
             "Tristeza": 0.16
         }
     }
-
-    /*
-    --------------------------------
-    AÑADIR LAS SIGUIENTES OBRAS AQUÍ
-
-    Ejemplo:
-
-    {
-        title: "Crisálida I",
-        image: "images/crisalida-i.avif",
-        emotions: {
-            "Alegría": 6.15,
-            "Confianza": 15.22,
-            "Curiosidad": 36.25,
-            "Sorpresa": 36.02,
-            "Disgusto": 0.89,
-            "Ira": 2.62,
-            "Miedo": 2.84,
-            "Tristeza": 0.01
-        }
-    },
-
-    --------------------------------
-    */
-
 ];
 
 
-/* ============================================
-   ELEMENTOS HTML
-============================================ */
+/* =========================================================
+   COLORES
+   ========================================================= */
 
-const mapContainer =
-    document.querySelector(".map-container");
+const emotionColors = {
+    "Alegría": getComputedStyle(document.documentElement)
+        .getPropertyValue("--alegria")
+        .trim(),
 
-const artworkLayer =
-    document.getElementById("artworkLayer");
+    "Confianza": getComputedStyle(document.documentElement)
+        .getPropertyValue("--confianza")
+        .trim(),
 
-const canvas =
-    document.getElementById("emotionCanvas");
+    "Curiosidad": getComputedStyle(document.documentElement)
+        .getPropertyValue("--curiosidad")
+        .trim(),
 
-const ctx =
-    canvas.getContext("2d");
+    "Sorpresa": getComputedStyle(document.documentElement)
+        .getPropertyValue("--sorpresa")
+        .trim(),
 
-const infoPanel =
-    document.getElementById("artworkInfo");
+    "Disgusto": getComputedStyle(document.documentElement)
+        .getPropertyValue("--disgusto")
+        .trim(),
 
-const artworkTitle =
-    document.getElementById("artworkTitle");
+    "Ira": getComputedStyle(document.documentElement)
+        .getPropertyValue("--ira")
+        .trim(),
 
-const emotionValues =
-    document.getElementById("emotionValues");
+    "Miedo": getComputedStyle(document.documentElement)
+        .getPropertyValue("--miedo")
+        .trim(),
 
-const closeInfo =
-    document.getElementById("closeInfo");
+    "Tristeza": getComputedStyle(document.documentElement)
+        .getPropertyValue("--tristeza")
+        .trim()
+};
 
-const filterButtons =
-    document.querySelectorAll(".emotion");
+
+/* =========================================================
+   ELEMENTOS
+   ========================================================= */
+
+const canvas = document.getElementById("emotionCanvas");
+const ctx = canvas.getContext("2d");
+
+const mapContainer = document.querySelector(".map-container");
+const artworkLayer = document.getElementById("artworkLayer");
+const filterButtons = document.querySelectorAll(".emotion");
 
 
-/* ============================================
+/* =========================================================
    ESTADO
-============================================ */
+   ========================================================= */
 
-let activeEmotion = "all";
+let currentFilter = "all";
 
-let nodes = [];
+let cards = [];
 
-let animationTime = 0;
+let particles = [];
+
+let animationFrame;
+
+let canvasWidth = 0;
+let canvasHeight = 0;
+
+const isMobile = () =>
+    window.matchMedia("(max-width: 700px)").matches;
 
 
-/* ============================================
-   CANVAS
-============================================ */
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
 
-function resizeCanvas() {
-
-    const width =
-        mapContainer.clientWidth;
-
-    const height =
-        mapContainer.clientHeight;
-
-    const ratio =
-        window.devicePixelRatio || 1;
-
-    canvas.width =
-        width * ratio;
-
-    canvas.height =
-        height * ratio;
-
-    canvas.style.width =
-        width + "px";
-
-    canvas.style.height =
-        height + "px";
-
-    ctx.setTransform(
-        ratio,
-        0,
-        0,
-        ratio,
-        0,
-        0
-    );
-
-    positionArtworks();
-
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
 }
 
 
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
+function slugifyEmotion(emotion) {
+    return emotion
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "-");
+}
 
 
-/* ============================================
-   POSICIONAMIENTO
+/*
+ * Random determinista.
+ * Hace que cada punto tenga un comportamiento estable
+ * en lugar de cambiar aleatoriamente cada frame.
+ */
+function seededRandom(seed) {
+    const x = Math.sin(seed * 12.9898) * 43758.5453;
+    return x - Math.floor(x);
+}
 
-   Las obras se distribuyen en un paisaje
-   amplio, dejando espacio suficiente entre ellas.
-============================================ */
 
-function positionArtworks() {
+/* =========================================================
+   CANVAS
+   ========================================================= */
 
-    if (!nodes.length) {
-        return;
+function resizeCanvas() {
+    const rect = mapContainer.getBoundingClientRect();
+
+    canvasWidth = Math.max(1, rect.width);
+    canvasHeight = Math.max(1, rect.height);
+
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = canvasWidth * dpr;
+    canvas.height = canvasHeight * dpr;
+
+    canvas.style.width = `${canvasWidth}px`;
+    canvas.style.height = `${canvasHeight}px`;
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    createParticles();
+}
+
+
+/* =========================================================
+   LAYOUT DE OBRAS
+   =========================================================
+   
+   En "all" utilizamos una composición más orgánica.
+
+   Cuando hay un filtro:
+   - se ordenan de mayor a menor
+   - se colocan en reading order:
+     izquierda → derecha
+     arriba → abajo
+   ========================================================= */
+
+function getLayoutPositions(numberOfVisibleWorks) {
+
+    const mobile = isMobile();
+
+    let columns;
+
+    if (mobile) {
+        columns = window.innerWidth <= 430 ? 2 : 2;
+    } else if (window.innerWidth <= 1000) {
+        columns = 3;
+    } else {
+        columns = 4;
     }
 
-    const width =
-        mapContainer.clientWidth;
+    /*
+     * Cuando hay pocas obras queremos mantener bastante aire.
+     */
+    if (numberOfVisibleWorks <= 2) {
+        columns = mobile ? 2 : 2;
+    }
 
-    const height =
-        mapContainer.clientHeight;
+    if (numberOfVisibleWorks === 3) {
+        columns = mobile ? 2 : 3;
+    }
 
+    const rows = Math.ceil(numberOfVisibleWorks / columns);
 
     /*
-        En pantallas grandes utilizamos una
-        distribución amplia.
+     * En móvil aumentamos la altura para que las cajas
+     * puedan abrirse sin tocar los filtros.
+     */
+    if (mobile) {
+        const rowHeight = window.innerWidth <= 430 ? 180 : 185;
 
-        En pantallas pequeñas hacemos que las
-        obras estén algo más juntas.
-    */
+        const desiredHeight = Math.max(
+            720,
+            rows * rowHeight + 100
+        );
 
-    let positions;
+        mapContainer.style.height = `${desiredHeight}px`;
+    } else {
+        /*
+         * En desktop dejamos una zona generosa.
+         */
+        mapContainer.style.height = "calc(100vh - 170px)";
+        mapContainer.style.minHeight = "620px";
+    }
 
+    const positions = [];
 
-    if (width > 1000) {
+    if (currentFilter === "all") {
 
-        positions = [
-            [0.20, 0.34],
-            [0.47, 0.27],
-            [0.75, 0.35],
-            [0.30, 0.61],
-            [0.61, 0.56],
-            [0.82, 0.70],
-            [0.46, 0.82]
-        ];
+        /*
+         * Composición inicial:
+         * deliberadamente no es una cuadrícula perfecta.
+         */
+        if (!mobile && window.innerWidth > 1000) {
 
-    } else if (width > 700) {
+            const desktopPositions = [
+                { x: 14, y: 25 },
+                { x: 38, y: 18 },
+                { x: 63, y: 27 },
+                { x: 86, y: 22 },
 
-        positions = [
-            [0.20, 0.34],
-            [0.50, 0.27],
-            [0.79, 0.35],
-            [0.29, 0.61],
-            [0.63, 0.57],
-            [0.80, 0.74],
-            [0.48, 0.82]
-        ];
+                { x: 24, y: 67 },
+                { x: 53, y: 57 },
+                { x: 78, y: 70 }
+            ];
+
+            for (let i = 0; i < numberOfVisibleWorks; i++) {
+                positions.push(
+                    desktopPositions[i] || {
+                        x: 50,
+                        y: 50
+                    }
+                );
+            }
+
+        } else if (!mobile) {
+
+            const tabletPositions = [
+                { x: 18, y: 24 },
+                { x: 50, y: 20 },
+                { x: 82, y: 25 },
+                { x: 25, y: 68 },
+                { x: 60, y: 60 },
+                { x: 82, y: 72 },
+                { x: 50, y: 78 }
+            ];
+
+            for (let i = 0; i < numberOfVisibleWorks; i++) {
+                positions.push(
+                    tabletPositions[i] || {
+                        x: 50,
+                        y: 50
+                    }
+                );
+            }
+
+        } else {
+
+            /*
+             * Mobile: cuadrícula pero con pequeñas variaciones.
+             */
+            const mobilePositions = [
+                { x: 25, y: 15 },
+                { x: 75, y: 15 },
+
+                { x: 25, y: 40 },
+                { x: 75, y: 40 },
+
+                { x: 25, y: 65 },
+                { x: 75, y: 65 },
+
+                { x: 25, y: 89 }
+            ];
+
+            for (let i = 0; i < numberOfVisibleWorks; i++) {
+                positions.push(
+                    mobilePositions[i] || {
+                        x: 50,
+                        y: 50
+                    }
+                );
+            }
+        }
 
     } else {
 
-        positions = [
-            [0.27, 0.25],
-            [0.72, 0.24],
-            [0.50, 0.40],
-            [0.24, 0.55],
-            [0.76, 0.54],
-            [0.30, 0.76],
-            [0.70, 0.76]
-        ];
+        /*
+         * FILTRO ACTIVO
+         *
+         * Reading order:
+         * izquierda → derecha
+         * arriba → abajo
+         */
+        const horizontalPadding = mobile ? 20 : 12;
+        const verticalStart = mobile ? 15 : 17;
+        const verticalEnd = mobile ? 87 : 78;
 
+        const usableWidth = 100 - horizontalPadding * 2;
+        const usableHeight = verticalEnd - verticalStart;
+
+        for (let i = 0; i < numberOfVisibleWorks; i++) {
+
+            const row = Math.floor(i / columns);
+            const column = i % columns;
+
+            const totalRows = Math.ceil(
+                numberOfVisibleWorks / columns
+            );
+
+            const x =
+                columns === 1
+                    ? 50
+                    : horizontalPadding +
+                      (column / Math.max(1, columns - 1)) *
+                      usableWidth;
+
+            const y =
+                totalRows === 1
+                    ? 45
+                    : verticalStart +
+                      (row / Math.max(1, totalRows - 1)) *
+                      usableHeight;
+
+            positions.push({
+                x,
+                y
+            });
+        }
     }
 
-
-    nodes.forEach((node, index) => {
-
-        if (!positions[index]) {
-            return;
-        }
-
-        const [x, y] =
-            positions[index];
-
-        node.baseX =
-            width * x;
-
-        node.baseY =
-            height * y;
-
-        node.x =
-            node.baseX;
-
-        node.y =
-            node.baseY;
-
-        node.element.style.left =
-            node.x + "px";
-
-        node.element.style.top =
-            node.y + "px";
-
-    });
-
+    return positions;
 }
 
 
-/* ============================================
-   CREAR LAS OBRAS
-============================================ */
+/* =========================================================
+   RENDER DE OBRAS
+   ========================================================= */
 
-function createArtworks() {
+function renderArtworks() {
 
     artworkLayer.innerHTML = "";
 
-    nodes = [];
+    cards = [];
+
+    let visibleArtworks = artworks.map((artwork, index) => ({
+        artwork,
+        originalIndex: index
+    }));
 
 
-    artworks.forEach((artwork, index) => {
+    /*
+     * FILTRO
+     */
 
-        const article =
-            document.createElement("article");
+    if (currentFilter !== "all") {
 
-        article.className =
-            "artwork";
+        visibleArtworks = visibleArtworks
+            .filter(item => {
+                return item.artwork.emotions[currentFilter] > 0;
+            })
+            .sort((a, b) => {
+                return (
+                    b.artwork.emotions[currentFilter] -
+                    a.artwork.emotions[currentFilter]
+                );
+            });
+    }
+
+
+    /*
+     * POSICIONES
+     */
+
+    const positions = getLayoutPositions(
+        visibleArtworks.length
+    );
+
+
+    /*
+     * CREAR CADA OBRA
+     */
+
+    visibleArtworks.forEach((item, index) => {
+
+        const artwork = item.artwork;
+
+        const card = document.createElement("article");
+
+        card.className = "artwork-card";
+
+        card.dataset.index = item.originalIndex;
+
+        card.dataset.title = artwork.title;
 
 
         /*
-            Imagen
-        */
+         * Posición
+         */
 
-        const image =
-            document.createElement("img");
+        const position = positions[index];
 
-        image.className =
-            "artwork-image";
-
-        image.src =
-            artwork.image;
-
-        image.alt =
-            artwork.title;
-
-        image.draggable =
-            false;
-
-        image.loading =
-            "lazy";
+        card.style.left = `${position.x}%`;
+        card.style.top = `${position.y}%`;
 
 
         /*
-            Título
-        */
+         * Wrapper imagen
+         */
 
-        const title =
-            document.createElement("div");
+        const imageWrap = document.createElement("div");
 
-        title.className =
-            "artwork-title";
-
-        title.textContent =
-            artwork.title;
+        imageWrap.className = "artwork-image-wrap";
 
 
         /*
-            Pequeño campo para las partículas.
-            Las partículas estarán detrás de la imagen.
-        */
+         * Imagen
+         */
 
-        const particleContainer =
-            document.createElement("div");
+        const image = document.createElement("img");
 
-        particleContainer.className =
-            "particle-container";
+        image.className = "artwork-image";
+
+        image.src = artwork.image;
+
+        image.alt = artwork.title;
+
+        image.draggable = false;
 
 
-        article.appendChild(
-            particleContainer
+        imageWrap.appendChild(image);
+
+
+        /*
+         * Caja de información
+         */
+
+        const info = document.createElement("div");
+
+        info.className = "artwork-info";
+
+
+        /*
+         * Botón X
+         */
+
+        const closeButton = document.createElement("button");
+
+        closeButton.className = "info-close";
+
+        closeButton.type = "button";
+
+        closeButton.innerHTML = "×";
+
+        closeButton.setAttribute(
+            "aria-label",
+            "Cerrar información"
         );
 
-        article.appendChild(
+
+        closeButton.addEventListener("click", event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            card.classList.remove("is-open");
+            card.classList.remove("is-still");
+
+        });
+
+
+        /*
+         * Título
+         */
+
+        const title = document.createElement("h2");
+
+        title.className = "info-title";
+
+        title.textContent = artwork.title;
+
+
+        /*
+         * Emociones
+         */
+
+        const emotionContainer =
+            document.createElement("div");
+
+        emotionContainer.className = "info-emotions";
+
+
+        const emotionsToShow =
+            currentFilter === "all"
+                ? emotions
+                : [currentFilter];
+
+
+        emotionsToShow.forEach(emotion => {
+
+            const value =
+                artwork.emotions[emotion];
+
+
+            /*
+             * En modo normal enseñamos todas.
+             * En filtro, solo la seleccionada.
+             */
+
+            if (
+                currentFilter !== "all" &&
+                value <= 0
+            ) {
+                return;
+            }
+
+
+            const row = document.createElement("div");
+
+            row.className = "emotion-row";
+
+
+            const name = document.createElement("span");
+
+            name.className = "emotion-name";
+
+
+            const indicator =
+                document.createElement("span");
+
+            indicator.className =
+                "emotion-indicator indicator-" +
+                slugifyEmotion(emotion);
+
+
+            name.appendChild(indicator);
+
+            name.appendChild(
+                document.createTextNode(emotion.toLowerCase())
+            );
+
+
+            const percentage =
+                document.createElement("span");
+
+            percentage.className = "emotion-value";
+
+            percentage.textContent =
+                `${value.toFixed(2)}%`;
+
+
+            row.appendChild(name);
+
+            row.appendChild(percentage);
+
+            emotionContainer.appendChild(row);
+        });
+
+
+        info.appendChild(closeButton);
+
+        info.appendChild(title);
+
+        info.appendChild(emotionContainer);
+
+
+        /*
+         * Montar card
+         */
+
+        card.appendChild(imageWrap);
+
+        card.appendChild(info);
+
+        artworkLayer.appendChild(card);
+
+
+        /*
+         * Guardamos referencia
+         */
+
+        cards.push({
+            element: card,
+            artwork,
+            originalIndex: item.originalIndex,
+            position,
             image
-        );
-
-        article.appendChild(
-            title
-        );
-
-
-        artworkLayer.appendChild(
-            article
-        );
-
-
-        const node = {
-
-            artwork: artwork,
-
-            element: article,
-
-            particleContainer:
-                particleContainer,
-
-            baseX: 0,
-            baseY: 0,
-
-            x: 0,
-            y: 0,
-
-            phase:
-                index * 1.73,
-
-            index: index
-
-        };
-
-
-        nodes.push(node);
+        });
 
 
         /*
-            Click sobre la obra
-        */
+         * Interacción desktop
+         */
 
-        article.addEventListener(
+        card.addEventListener("mouseenter", () => {
+
+            if (!isMobile()) {
+
+                card.classList.add("is-still");
+
+            }
+        });
+
+
+        card.addEventListener("mouseleave", () => {
+
+            if (!isMobile()) {
+
+                card.classList.remove("is-still");
+
+            }
+        });
+
+
+        /*
+         * Interacción click / tap
+         */
+
+        let mobileOpened = false;
+
+        card.addEventListener("click", event => {
+
+            /*
+             * DESKTOP
+             *
+             * Click = ir directamente a la obra.
+             */
+            if (!isMobile()) {
+
+                window.location.href = artwork.link;
+
+                return;
+            }
+
+
+            /*
+             * MOBILE
+             *
+             * Primer tap = información.
+             * Segundo tap = link.
+             */
+
+            if (!mobileOpened) {
+
+                event.preventDefault();
+
+                mobileOpened = true;
+
+                card.classList.add("is-open");
+                card.classList.add("is-still");
+
+            } else {
+
+                window.location.href = artwork.link;
+            }
+        });
+
+
+        /*
+         * Si tocamos fuera de la card, cerramos
+         * la información en mobile.
+         */
+        document.addEventListener(
             "click",
-            () => {
+            event => {
 
-                openArtwork(
-                    artwork
-                );
+                if (
+                    isMobile() &&
+                    mobileOpened &&
+                    !card.contains(event.target)
+                ) {
 
-            }
+                    card.classList.remove("is-open");
+                    card.classList.remove("is-still");
+
+                    mobileOpened = false;
+                }
+            },
+            { passive: true }
         );
-
-
-        /*
-            Hover
-        */
-
-        article.addEventListener(
-            "mouseenter",
-            () => {
-
-                article.classList.add(
-                    "hovered"
-                );
-
-            }
-        );
-
-
-        article.addEventListener(
-            "mouseleave",
-            () => {
-
-                article.classList.remove(
-                    "hovered"
-                );
-
-            }
-        );
-
     });
 
 
-    positionArtworks();
+    /*
+     * Crear de nuevo los puntos
+     */
 
+    createParticles();
 }
 
 
-/* ============================================
-   PARTÍCULAS EMOCIONALES
+/* =========================================================
+   PARTICLES
+   =========================================================
+   
+   Número de puntos:
+   
+   7.18%  → 7 puntos
+   20.69% → 21 puntos
+   38.22% → 38 puntos
+   
+   Nunca utilizamos opacity.
+   ========================================================= */
 
-   Las partículas NO representan las obras.
-   Representan la presencia de las emociones
-   alrededor de cada obra.
-============================================ */
+function createParticles() {
 
-function drawParticles() {
+    particles = [];
 
-    const width =
-        mapContainer.clientWidth;
 
-    const height =
-        mapContainer.clientHeight;
+    artworks.forEach((artwork, artworkIndex) => {
 
+        emotions.forEach((emotion, emotionIndex) => {
+
+            const value =
+                artwork.emotions[emotion];
+
+
+            /*
+             * El número de puntos corresponde al porcentaje
+             * redondeado al entero más cercano.
+             */
+            const numberOfPoints =
+                Math.round(value);
+
+
+            for (
+                let pointIndex = 0;
+                pointIndex < numberOfPoints;
+                pointIndex++
+            ) {
+
+                const seed =
+                    artworkIndex * 10000 +
+                    emotionIndex * 1000 +
+                    pointIndex;
+
+
+                /*
+                 * Distribución inicial.
+                 *
+                 * sqrt = distribución más natural alrededor
+                 * del centro que una simple línea radial.
+                 */
+                const angle =
+                    seededRandom(seed + 1) *
+                    Math.PI *
+                    2;
+
+                const radius =
+                    25 +
+                    Math.sqrt(
+                        seededRandom(seed + 2)
+                    ) * 90;
+
+
+                particles.push({
+
+                    artworkIndex,
+
+                    emotion,
+
+                    angle,
+
+                    radius,
+
+                    seed,
+
+                    size:
+                        1.65 +
+                        seededRandom(seed + 3) * 1.15,
+
+                    speed:
+                        0.00012 +
+                        seededRandom(seed + 4) * 0.00022,
+
+                    phase:
+                        seededRandom(seed + 5) *
+                        Math.PI *
+                        2,
+
+                    wobble:
+                        3 +
+                        seededRandom(seed + 6) * 7
+                });
+            }
+        });
+    });
+}
+
+
+/* =========================================================
+   POSICIÓN ACTUAL DE UNA OBRA
+   ========================================================= */
+
+function getArtworkCenter(artworkIndex) {
+
+    const cardData = cards.find(
+        card => card.originalIndex === artworkIndex
+    );
+
+    if (!cardData) {
+        return null;
+    }
+
+    const card = cardData.element;
+
+    const rect = card.getBoundingClientRect();
+
+    const mapRect =
+        mapContainer.getBoundingClientRect();
+
+
+    return {
+        x:
+            rect.left -
+            mapRect.left +
+            rect.width / 2,
+
+        y:
+            rect.top -
+            mapRect.top +
+            20
+    };
+}
+
+
+/* =========================================================
+   DIBUJO DE PARTICLES
+   ========================================================= */
+
+function drawParticles(time) {
 
     ctx.clearRect(
         0,
         0,
-        width,
-        height
+        canvasWidth,
+        canvasHeight
     );
 
 
-    nodes.forEach(node => {
+    particles.forEach(particle => {
 
-        const artwork =
-            node.artwork;
-
-
-        emotions.forEach(
-            (emotion, emotionIndex) => {
-
-                const value =
-                    artwork.emotions[emotion];
-
-
-                /*
-                    Si hay un filtro activo,
-                    solo mostramos esa emoción.
-                */
-
-                if (
-                    activeEmotion !== "all" &&
-                    emotion !== activeEmotion
-                ) {
-                    return;
-                }
+        /*
+         * Si estamos filtrando una emoción,
+         * todos los demás puntos desaparecen.
+         */
+        if (
+            currentFilter !== "all" &&
+            particle.emotion !== currentFilter
+        ) {
+            return;
+        }
 
 
-                /*
-                    La cantidad de partículas
-                    depende del porcentaje.
-                */
-
-                const particleCount =
-                    Math.max(
-                        1,
-                        Math.round(
-                            value / 4
-                        )
-                    );
+        const center =
+            getArtworkCenter(
+                particle.artworkIndex
+            );
 
 
-                const color =
-                    emotionColors[emotion];
+        if (!center) {
+            return;
+        }
 
 
-                /*
-                    Las partículas forman una
-                    pequeña nube alrededor de la obra.
-                */
+        /*
+         * Movimiento orgánico.
+         *
+         * Cada punto tiene:
+         * - velocidad propia
+         * - fase propia
+         * - radio propio
+         * - dos ondas diferentes
+         *
+         * Esto evita que parezcan partículas orbitando
+         * mecánicamente alrededor de un centro.
+         */
 
-                for (
-                    let i = 0;
-                    i < particleCount;
-                    i++
-                ) {
-
-                    const seed =
-                        (
-                            node.index * 17 +
-                            emotionIndex * 31 +
-                            i * 13
-                        );
+        const t =
+            time * particle.speed;
 
 
-                    const angle =
-                        seed * 2.39996 +
-                        animationTime *
-                        0.00015;
+        const organicAngle =
+            particle.angle +
+            Math.sin(
+                t +
+                particle.phase
+            ) *
+            0.22;
 
 
-                    const distance =
-                        85 +
-                        (
-                            (
-                                seed * 37
-                            ) % 70
-                        );
+        const organicRadius =
+            particle.radius +
+            Math.sin(
+                t * 1.37 +
+                particle.phase
+            ) *
+            particle.wobble;
 
 
-                    const movement =
-                        Math.sin(
-                            animationTime *
-                            0.0008 +
-                            seed
-                        ) * 7;
+        const secondaryX =
+            Math.sin(
+                t * 0.83 +
+                particle.phase * 2
+            ) *
+            4;
 
 
-                    const x =
-                        node.x +
-                        Math.cos(angle) *
-                        (
-                            distance +
-                            movement
-                        );
+        const secondaryY =
+            Math.cos(
+                t * 0.71 +
+                particle.phase
+            ) *
+            4;
 
 
-                    const y =
-                        node.y +
-                        Math.sin(angle) *
-                        (
-                            distance +
-                            movement
-                        );
+        const x =
+            center.x +
+            Math.cos(organicAngle) *
+            organicRadius +
+            secondaryX;
 
 
-                    /*
-                        Cuando el porcentaje es
-                        pequeño, los puntos son más
-                        transparentes.
-                    */
-
-                    const alpha =
-                        Math.min(
-                            0.75,
-                            0.18 +
-                            value / 100
-                        );
+        const y =
+            center.y +
+            Math.sin(organicAngle) *
+            organicRadius *
+            0.72 +
+            secondaryY;
 
 
-                    const radius =
-                        1.2 +
-                        (
-                            value / 100
-                        ) * 2.5;
+        /*
+         * Evitar que los puntos se salgan demasiado
+         * del propio mapa.
+         */
+        const safeX =
+            clamp(x, -30, canvasWidth + 30);
+
+        const safeY =
+            clamp(y, -30, canvasHeight + 30);
 
 
-                    ctx.beginPath();
+        /*
+         * COLOR 100% OPACO.
+         */
+        ctx.globalAlpha = 1;
 
-                    ctx.arc(
-                        x,
-                        y,
-                        radius,
-                        0,
-                        Math.PI * 2
-                    );
+        ctx.fillStyle =
+            emotionColors[particle.emotion];
 
-                    ctx.fillStyle =
-                        color;
 
-                    ctx.globalAlpha =
-                        alpha;
+        ctx.beginPath();
 
-                    ctx.fill();
-
-                }
-
-            }
+        ctx.arc(
+            safeX,
+            safeY,
+            particle.size,
+            0,
+            Math.PI * 2
         );
 
+        ctx.fill();
     });
 
 
     ctx.globalAlpha = 1;
 
+    animationFrame =
+        requestAnimationFrame(drawParticles);
 }
 
 
-/* ============================================
-   ANIMACIÓN
-
-   Movimiento extremadamente lento.
-============================================ */
-
-function animate(time) {
-
-    animationTime =
-        time;
-
-
-    nodes.forEach(node => {
-
-        /*
-            Movimiento muy pequeño.
-            La sensación debería ser de
-            un paisaje que respira.
-        */
-
-        const movementX =
-            Math.sin(
-                time * 0.00025 +
-                node.phase
-            ) * 3;
-
-        const movementY =
-            Math.cos(
-                time * 0.00021 +
-                node.phase
-            ) * 3;
-
-
-        node.x =
-            node.baseX +
-            movementX;
-
-        node.y =
-            node.baseY +
-            movementY;
-
-
-        node.element.style.left =
-            node.x + "px";
-
-        node.element.style.top =
-            node.y + "px";
-
-    });
-
-
-    drawParticles();
-
-
-    requestAnimationFrame(
-        animate
-    );
-
-}
-
-
-/* ============================================
+/* =========================================================
    FILTROS
-============================================ */
+   ========================================================= */
 
-filterButtons.forEach(
-    button => {
+function setFilter(emotion) {
 
-        button.addEventListener(
-            "click",
-            () => {
-
-                activeEmotion =
-                    button.dataset.emotion;
+    currentFilter = emotion;
 
 
-                filterButtons.forEach(
-                    item => {
+    /*
+     * Estado visual de botones.
+     */
 
-                        item.classList.remove(
-                            "active"
-                        );
+    filterButtons.forEach(button => {
 
-                    }
-                );
+        const active =
+            button.dataset.emotion === emotion;
+
+        button.classList.toggle(
+            "active",
+            active
+        );
+    });
 
 
-                button.classList.add(
-                    "active"
-                );
+    /*
+     * Cerramos cualquier interacción mobile.
+     */
 
+    cards.forEach(card => {
 
-                updateArtworkVisibility();
-
-            }
+        card.element.classList.remove(
+            "is-open"
         );
 
-    }
-);
+        card.element.classList.remove(
+            "is-still"
+        );
+    });
 
 
-/* ============================================
-   VISIBILIDAD SEGÚN EMOCIÓN
-============================================ */
-
-function updateArtworkVisibility() {
-
-    nodes.forEach(node => {
-
-        const artwork =
-            node.artwork;
-
-
-        if (
-            activeEmotion === "all"
-        ) {
-
-            node.element.style.opacity =
-                "1";
-
-            node.element.classList.remove(
-                "dimmed"
-            );
-
-            return;
-
-        }
+    /*
+     * Renderizamos de nuevo.
+     *
+     * Esto es lo que hace que:
+     * - se eliminen las obras con 0%
+     * - se ordenen por porcentaje
+     * - se reorganice el espacio
+     * - cambie la información
+     */
+    renderArtworks();
+}
 
 
-        const value =
-            artwork.emotions[
-                activeEmotion
-            ];
+filterButtons.forEach(button => {
 
+    button.addEventListener("click", () => {
 
-        /*
-            Las obras con mucha presencia
-            de la emoción permanecen fuertes.
-
-            Las demás se vuelven más sutiles.
-        */
-
-        let opacity;
-
-
-        if (value >= 30) {
-
-            opacity = 1;
-
-        } else if (value >= 20) {
-
-            opacity = 0.85;
-
-        } else if (value >= 10) {
-
-            opacity = 0.55;
-
-        } else {
-
-            opacity = 0.25;
-
-        }
-
-
-        node.element.style.opacity =
-            opacity;
-
-
-        node.element.classList.toggle(
-            "dimmed",
-            value < 10
+        setFilter(
+            button.dataset.emotion
         );
 
     });
 
-}
+});
 
 
-/* ============================================
-   INFORMACIÓN DE LA OBRA
-============================================ */
+/* =========================================================
+   RESIZE
+   ========================================================= */
 
-function openArtwork(artwork) {
+let resizeTimeout;
 
-    artworkTitle.textContent =
-        artwork.title;
+window.addEventListener("resize", () => {
 
+    clearTimeout(resizeTimeout);
 
-    emotionValues.innerHTML =
-        "";
+    resizeTimeout = setTimeout(() => {
 
+        resizeCanvas();
 
-    emotions.forEach(
-        emotion => {
+        renderArtworks();
 
-            const value =
-                artwork.emotions[
-                    emotion
-                ];
+    }, 150);
+});
 
 
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "emotion-value";
-
-
-            const name =
-                document.createElement(
-                    "span"
-                );
-
-            name.className =
-                "emotion-name";
-
-            name.textContent =
-                emotion.toLowerCase();
-
-
-            const bar =
-                document.createElement(
-                    "div"
-                );
-
-            bar.className =
-                "emotion-bar";
-
-
-            const fill =
-                document.createElement(
-                    "div"
-                );
-
-            fill.className =
-                "emotion-bar-fill";
-
-
-            fill.style.width =
-                value + "%";
-
-
-            fill.style.background =
-                emotionColors[
-                    emotion
-                ];
-
-
-            bar.appendChild(
-                fill
-            );
-
-
-            const number =
-                document.createElement(
-                    "span"
-                );
-
-            number.className =
-                "emotion-number";
-
-            number.textContent =
-                value.toFixed(2) + "%";
-
-
-            row.appendChild(
-                name
-            );
-
-            row.appendChild(
-                bar
-            );
-
-            row.appendChild(
-                number
-            );
-
-
-            emotionValues.appendChild(
-                row
-            );
-
-        }
-    );
-
-
-    infoPanel.classList.add(
-        "visible"
-    );
-
-}
-
-
-/* ============================================
-   CERRAR INFORMACIÓN
-============================================ */
-
-closeInfo.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        infoPanel.classList.remove(
-            "visible"
-        );
-
-    }
-);
-
-
-/* ============================================
+/* =========================================================
    INICIALIZACIÓN
-============================================ */
-
-createArtworks();
+   ========================================================= */
 
 resizeCanvas();
 
-updateArtworkVisibility();
+renderArtworks();
 
-requestAnimationFrame(
-    animate
-);
+cancelAnimationFrame(animationFrame);
+
+animationFrame =
+    requestAnimationFrame(drawParticles);
