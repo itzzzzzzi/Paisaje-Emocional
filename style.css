@@ -1,6 +1,6 @@
-/* --------------------------------
+/* ============================================
    VARIABLES
--------------------------------- */
+============================================ */
 
 :root {
 
@@ -20,72 +20,102 @@
 }
 
 
-/* --------------------------------
+/* ============================================
    RESET
--------------------------------- */
+============================================ */
 
 * {
     box-sizing: border-box;
 }
 
+
 html,
 body {
+
     margin: 0;
     padding: 0;
+
     width: 100%;
     height: 100%;
+
 }
+
 
 body {
 
-    background: var(--background);
-    color: var(--black);
+    background:
+        var(--background);
+
+    color:
+        var(--black);
 
     font-family:
         "Times New Roman",
         Times,
         serif;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    overflow: hidden;
+    overflow:
+        hidden;
 
 }
 
 
-/* --------------------------------
+/* ============================================
    HEADER
--------------------------------- */
+============================================ */
 
 .header {
 
-    position: fixed;
+    position:
+        fixed;
 
-    top: 0;
-    left: 0;
+    top:
+        0;
 
-    width: 100%;
+    left:
+        0;
 
-    padding: 28px 30px;
+    width:
+        100%;
 
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    padding:
+        28px 30px;
 
-    z-index: 20;
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    z-index:
+        100;
+
+    pointer-events:
+        none;
 
 }
 
 
 .header-left {
 
-    display: flex;
-    flex-direction: column;
+    display:
+        flex;
+
+    flex-direction:
+        column;
 
 }
 
 
-/* SILVIA & THE SPYGLASS */
+/* --------------------------------
+   EYEBROW
+-------------------------------- */
 
 .eyebrow {
 
@@ -94,331 +124,568 @@ body {
         Times,
         serif;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    font-weight: normal;
+    font-weight:
+        normal;
 
-    margin-bottom: 5px;
+    line-height:
+        1.1;
+
+    margin:
+        0 0 5px 0;
 
 }
 
 
-/* PAISAJE EMOCIONAL */
+/* --------------------------------
+   TITULO
+-------------------------------- */
 
 h1 {
 
-    margin: 0;
+    margin:
+        0;
+
+    padding:
+        0;
 
     font-family:
         "Times New Roman",
         Times,
         serif;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    font-weight: normal;
+    font-weight:
+        normal;
+
+    line-height:
+        1.1;
 
 }
 
 
-/* Información secundaria */
+/* --------------------------------
+   INFORMACIÓN
+-------------------------------- */
 
 .header-info {
 
-    color: var(--grey);
+    color:
+        var(--grey);
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    line-height: 1.35;
+    line-height:
+        1.35;
 
-    text-align: right;
+    text-align:
+        right;
 
 }
 
 
-/* --------------------------------
-   MAP
--------------------------------- */
+/* ============================================
+   MAIN
+============================================ */
 
 main {
 
-    width: 100%;
-    height: 100%;
+    width:
+        100%;
+
+    height:
+        100%;
 
 }
 
+
+/* ============================================
+   MAPA
+============================================ */
 
 .map-container {
 
-    position: fixed;
+    position:
+        fixed;
 
-    inset: 0;
+    inset:
+        0;
 
-    overflow: hidden;
+    width:
+        100%;
+
+    height:
+        100%;
+
+    overflow:
+        hidden;
 
 }
 
+
+/* ============================================
+   CANVAS
+============================================ */
 
 #emotionCanvas {
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 0;
+    inset:
+        0;
 
-    width: 100%;
-    height: 100%;
+    width:
+        100%;
 
-    pointer-events: none;
+    height:
+        100%;
+
+    pointer-events:
+        none;
+
+    z-index:
+        1;
 
 }
 
+
+/* ============================================
+   CAPA DE OBRAS
+============================================ */
 
 #artworkLayer {
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 0;
+    inset:
+        0;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    z-index:
+        2;
 
 }
 
 
-/* --------------------------------
-   ARTWORK
--------------------------------- */
+/* ============================================
+   OBRA
+============================================ */
 
 .artwork {
 
-    position: absolute;
+    position:
+        absolute;
 
-    width: 150px;
+    width:
+        175px;
 
     transform:
         translate(-50%, -50%);
 
-    cursor: pointer;
+    cursor:
+        pointer;
+
+    user-select:
+        none;
+
+    z-index:
+        3;
 
     transition:
         opacity 0.8s ease,
-        transform 1.2s cubic-bezier(.2,.7,.2,1);
+        filter 0.8s ease;
 
 }
 
+
+/* --------------------------------
+   IMAGEN
+-------------------------------- */
 
 .artwork-image {
 
-    display: block;
+    position:
+        relative;
 
-    width: 100%;
+    display:
+        block;
 
-    height: auto;
+    width:
+        100%;
+
+    height:
+        auto;
+
+    object-fit:
+        contain;
+
+    pointer-events:
+        none;
+
+    z-index:
+        3;
 
 }
 
 
+/* --------------------------------
+   TITULO DE OBRA
+-------------------------------- */
+
 .artwork-title {
 
-    margin-top: 8px;
+    position:
+        relative;
+
+    margin:
+        9px 0 0 0;
+
+    padding:
+        0;
 
     font-family:
         "Times New Roman",
         Times,
         serif;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    line-height: 1.1;
+    font-weight:
+        normal;
 
-}
+    line-height:
+        1.12;
 
+    max-width:
+        210px;
 
-/* --------------------------------
-   EMOTION PARTICLES
--------------------------------- */
-
-.emotion-particle {
-
-    position: absolute;
-
-    width: 4px;
-    height: 4px;
-
-    border-radius: 50%;
-
-    pointer-events: none;
-
-    opacity: .75;
+    z-index:
+        4;
 
 }
 
 
-/* --------------------------------
-   EMOTION FILTER
--------------------------------- */
+/* ============================================
+   HOVER
+============================================ */
 
-.emotion-filter {
+.artwork:hover {
 
-    position: fixed;
+    z-index:
+        10;
 
-    left: 30px;
-    bottom: 28px;
+}
 
-    z-index: 30;
 
-    display: flex;
+.artwork.hovered .artwork-image {
 
-    flex-wrap: wrap;
+    filter:
+        contrast(1.03);
 
-    gap: 12px;
+}
 
-    max-width: 700px;
+
+/* ============================================
+   PARTICULAS
+============================================ */
+
+.particle-container {
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    left:
+        50%;
+
+    width:
+        1px;
+
+    height:
+        1px;
+
+    pointer-events:
+        none;
+
+    z-index:
+        1;
 
 }
 
 
 /*
-    IMPORTANTE:
-    no border
-    no background
-    no box
+    El canvas dibuja las partículas,
+    así que este elemento solo sirve
+    como referencia visual/capa.
 */
+
+
+/* ============================================
+   FILTROS
+============================================ */
+
+.emotion-filter {
+
+    position:
+        fixed;
+
+    left:
+        30px;
+
+    bottom:
+        28px;
+
+    z-index:
+        100;
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        12px;
+
+    max-width:
+        700px;
+
+}
+
+
+/* --------------------------------
+   BOTONES
+-------------------------------- */
 
 .emotion {
 
-    border: 0;
+    border:
+        0;
 
-    padding: 0;
+    padding:
+        0;
 
-    margin: 0;
+    margin:
+        0;
 
-    background: transparent;
+    background:
+        transparent;
 
-    color: var(--black);
+    color:
+        var(--black);
 
     font-family:
         "Courier New",
         Courier,
         monospace;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    font-weight: normal;
+    font-weight:
+        normal;
 
-    cursor: pointer;
+    line-height:
+        1;
+
+    cursor:
+        pointer;
 
 }
 
+
+/* --------------------------------
+   ACTIVO
+-------------------------------- */
 
 .emotion.active {
 
-    font-weight: bold;
+    font-weight:
+        bold;
 
 }
 
 
-/* --------------------------------
-   INFO PANEL
--------------------------------- */
+/* ============================================
+   PANEL DE INFORMACIÓN
+============================================ */
 
 .artwork-info {
 
-    position: fixed;
+    position:
+        fixed;
 
-    top: 30px;
-    right: 30px;
+    top:
+        30px;
 
-    width: 300px;
+    right:
+        30px;
 
-    padding: 0;
+    width:
+        320px;
 
-    z-index: 50;
+    padding:
+        0;
 
-    display: none;
+    z-index:
+        200;
 
-}
-
-
-.artwork-info.visible {
-
-    display: block;
-
-}
-
-
-.close-info {
-
-    position: absolute;
-
-    top: -5px;
-    right: 0;
-
-    border: 0;
-
-    background: transparent;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size: 20px;
-
-    cursor: pointer;
-
-    color: var(--grey);
-
-}
-
-
-.info-label {
-
-    color: var(--grey);
-
-    font-size: 14px;
-
-    margin-bottom: 8px;
-
-}
-
-
-.artwork-info h2 {
-
-    margin: 0 0 25px 0;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size: 14px;
-
-    font-weight: normal;
-
-    line-height: 1.15;
+    display:
+        none;
 
 }
 
 
 /* --------------------------------
-   EMOTION VALUES
+   VISIBLE
 -------------------------------- */
+
+.artwork-info.visible {
+
+    display:
+        block;
+
+}
+
+
+/* --------------------------------
+   CERRAR
+-------------------------------- */
+
+.close-info {
+
+    position:
+        absolute;
+
+    top:
+        -5px;
+
+    right:
+        0;
+
+    border:
+        0;
+
+    padding:
+        0;
+
+    background:
+        transparent;
+
+    font-family:
+        "Times New Roman",
+        Times,
+        serif;
+
+    font-size:
+        20px;
+
+    font-weight:
+        normal;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    color:
+        var(--grey);
+
+}
+
+
+/* ============================================
+   INFORMACIÓN DE LA OBRA
+============================================ */
+
+.info-label {
+
+    color:
+        var(--grey);
+
+    font-size:
+        14px;
+
+    margin:
+        0 0 8px 0;
+
+}
+
+
+/* --------------------------------
+   TITULO
+-------------------------------- */
+
+.artwork-info h2 {
+
+    margin:
+        0 0 25px 0;
+
+    padding:
+        0;
+
+    font-family:
+        "Times New Roman",
+        Times,
+        serif;
+
+    font-size:
+        14px;
+
+    font-weight:
+        normal;
+
+    line-height:
+        1.15;
+
+}
+
+
+/* ============================================
+   EMOCIONES
+============================================ */
 
 .emotion-value {
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         100px
         1fr
-        45px;
+        50px;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 10px;
+    gap:
+        10px;
 
-    margin-bottom: 9px;
+    margin:
+        0 0 9px 0;
 
 }
 
+
+/* --------------------------------
+   NOMBRE
+-------------------------------- */
 
 .emotion-name {
 
@@ -427,26 +694,48 @@ main {
         Courier,
         monospace;
 
-    font-size: 14px;
+    font-size:
+        14px;
+
+    font-weight:
+        normal;
 
 }
 
+
+/* --------------------------------
+   BARRA
+-------------------------------- */
 
 .emotion-bar {
 
-    height: 3px;
+    height:
+        3px;
 
-    background: rgba(0,0,0,.08);
+    background:
+        rgba(0, 0, 0, .08);
 
 }
 
+
+/* --------------------------------
+   RELLENO
+-------------------------------- */
 
 .emotion-bar-fill {
 
-    height: 100%;
+    height:
+        100%;
+
+    transition:
+        width 0.5s ease;
 
 }
 
+
+/* --------------------------------
+   PORCENTAJE
+-------------------------------- */
 
 .emotion-number {
 
@@ -455,75 +744,139 @@ main {
         Courier,
         monospace;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    text-align: right;
+    text-align:
+        right;
 
 }
 
 
-/* --------------------------------
-   METHODOLOGY NOTE
--------------------------------- */
+/* ============================================
+   NOTA METODOLÓGICA
+============================================ */
 
 .method-note {
 
-    margin-top: 25px;
+    margin:
+        25px 0 0 0;
 
-    color: var(--grey);
+    padding:
+        0;
 
-    font-size: 14px;
+    color:
+        var(--grey);
 
-    line-height: 1.25;
+    font-size:
+        14px;
+
+    line-height:
+        1.25;
 
 }
 
 
-/* --------------------------------
+/* ============================================
    MOBILE
--------------------------------- */
+============================================ */
 
 @media (max-width: 700px) {
 
     .header {
 
-        padding: 18px;
+        padding:
+            18px;
 
     }
 
 
     .header-info {
 
-        display: none;
-
-    }
-
-
-    .emotion-filter {
-
-        left: 18px;
-        bottom: 18px;
-
-        max-width:
-            calc(100% - 36px);
+        display:
+            none;
 
     }
 
 
     .artwork {
 
-        width: 115px;
+        width:
+            125px;
+
+    }
+
+
+    .artwork-title {
+
+        max-width:
+            155px;
+
+    }
+
+
+    .emotion-filter {
+
+        left:
+            18px;
+
+        right:
+            18px;
+
+        bottom:
+            18px;
+
+        max-width:
+            calc(100% - 36px);
+
+        gap:
+            11px;
 
     }
 
 
     .artwork-info {
 
-        top: 18px;
-        right: 18px;
+        top:
+            18px;
+
+        right:
+            18px;
 
         width:
             calc(100% - 36px);
+
+    }
+
+}
+
+
+/* ============================================
+   PANTALLAS MUY PEQUEÑAS
+============================================ */
+
+@media (max-width: 420px) {
+
+    .artwork {
+
+        width:
+            105px;
+
+    }
+
+
+    .artwork-title {
+
+        font-size:
+            13px;
+
+    }
+
+
+    .emotion {
+
+        font-size:
+            13px;
 
     }
 
