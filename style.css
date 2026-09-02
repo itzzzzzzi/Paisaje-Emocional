@@ -1,883 +1,618 @@
-/* ============================================
-   VARIABLES
-============================================ */
-
 :root {
-
     --background: #f4f1eb;
+    --white: #ffffff;
     --black: #171715;
     --grey: #77736c;
 
-    --alegria: #ffff71;
-    --confianza: #88fc6d;
-    --curiosidad: #f3ad62;
-    --sorpresa: #73bcf9;
-    --disgusto: #eb60f8;
-    --ira: #f09390;
-    --miedo: #439529;
-    --tristeza: #5050f6;
-
+    /* colores del gráfico de emociones */
+    --alegria: #e2dd00;
+    --confianza: #00fa00;
+    --curiosidad: #ff9933;
+    --sorpresa: #5abcff;
+    --disgusto: #bb00bb;
+    --ira: #f00000;
+    --miedo: #009800;
+    --tristeza: #5152ff;
 }
-
-
-/* ============================================
-   RESET
-============================================ */
 
 * {
     box-sizing: border-box;
 }
 
-
 html,
 body {
-
     margin: 0;
     padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    background: var(--background);
+    color: var(--black);
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.header {
+    width: 100%;
+    min-height: 76px;
+    padding: 17px 22px 15px 22px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+
+    background: var(--background);
+    position: relative;
+    z-index: 20;
+}
+
+.header-left {
+    min-width: 0;
+}
+
+.eyebrow {
+    margin: 0 0 4px 0;
+
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    line-height: 1.15;
+    color: var(--grey);
+    text-transform: uppercase;
+}
+
+.header h1 {
+    margin: 0;
+
+    font-family: "Times New Roman", Times, serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.header-info {
+    flex-shrink: 0;
+
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    text-align: right;
+    color: var(--grey);
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+main {
+    width: 100%;
+    min-height: calc(100vh - 76px);
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   MAP
+   ========================================================= */
+
+.map-container {
+    position: relative;
+
+    width: 100%;
+    flex: 1 1 auto;
+
+    /*
+     * El mapa tiene su propia zona.
+     * Así las obras no pueden invadir header ni filtros.
+     */
+    min-height: 620px;
+
+    overflow: hidden;
+}
+
+#emotionCanvas {
+    position: absolute;
+    inset: 0;
 
     width: 100%;
     height: 100%;
 
+    z-index: 1;
+    pointer-events: none;
 }
-
-
-body {
-
-    background:
-        var(--background);
-
-    color:
-        var(--black);
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size:
-        14px;
-
-    overflow:
-        hidden;
-
-}
-
-
-/* ============================================
-   HEADER
-============================================ */
-
-.header {
-
-    position:
-        fixed;
-
-    top:
-        0;
-
-    left:
-        0;
-
-    width:
-        100%;
-
-    padding:
-        28px 30px;
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        flex-start;
-
-    z-index:
-        100;
-
-    pointer-events:
-        none;
-
-}
-
-
-.header-left {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-}
-
-
-/* --------------------------------
-   EYEBROW
--------------------------------- */
-
-.eyebrow {
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size:
-        14px;
-
-    font-weight:
-        normal;
-
-    line-height:
-        1.1;
-
-    margin:
-        0 0 5px 0;
-
-}
-
-
-/* --------------------------------
-   TITULO
--------------------------------- */
-
-h1 {
-
-    margin:
-        0;
-
-    padding:
-        0;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size:
-        14px;
-
-    font-weight:
-        normal;
-
-    line-height:
-        1.1;
-
-}
-
-
-/* --------------------------------
-   INFORMACIÓN
--------------------------------- */
-
-.header-info {
-
-    color:
-        var(--grey);
-
-    font-size:
-        14px;
-
-    line-height:
-        1.35;
-
-    text-align:
-        right;
-
-}
-
-
-/* ============================================
-   MAIN
-============================================ */
-
-main {
-
-    width:
-        100%;
-
-    height:
-        100%;
-
-}
-
-
-/* ============================================
-   MAPA
-============================================ */
-
-.map-container {
-
-    position:
-        fixed;
-
-    inset:
-        0;
-
-    width:
-        100%;
-
-    height:
-        100%;
-
-    overflow:
-        hidden;
-
-}
-
-
-/* ============================================
-   CANVAS
-============================================ */
-
-#emotionCanvas {
-
-    position:
-        absolute;
-
-    inset:
-        0;
-
-    width:
-        100%;
-
-    height:
-        100%;
-
-    pointer-events:
-        none;
-
-    z-index:
-        1;
-
-}
-
-
-/* ============================================
-   CAPA DE OBRAS
-============================================ */
 
 #artworkLayer {
+    position: absolute;
+    inset: 0;
 
-    position:
-        absolute;
-
-    inset:
-        0;
-
-    width:
-        100%;
-
-    height:
-        100%;
-
-    z-index:
-        2;
-
+    z-index: 5;
 }
 
+/* =========================================================
+   ARTWORKS
+   ========================================================= */
 
-/* ============================================
-   OBRA
-============================================ */
+.artwork-card {
+    position: absolute;
 
-.artwork {
+    width: 175px;
 
-    position:
-        absolute;
+    /*
+     * La posición exacta la controla JS.
+     */
+    transform: translate(-50%, -50%);
 
-    width:
-        175px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    transform:
-        translate(-50%, -50%);
+    cursor: pointer;
 
-    cursor:
-        pointer;
-
-    user-select:
-        none;
-
-    z-index:
-        3;
+    /*
+     * El movimiento se hace mediante variables CSS
+     * actualizadas por JS.
+     */
+    --drift-x: 0px;
+    --drift-y: 0px;
 
     transition:
-        opacity 0.8s ease,
-        filter 0.8s ease;
-
+        left 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        top 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 500ms ease;
 }
 
+.artwork-card.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
 
-/* --------------------------------
-   IMAGEN
--------------------------------- */
+.artwork-card.is-still {
+    /*
+     * No hay movimiento cuando está siendo inspeccionada.
+     */
+    --drift-x: 0px !important;
+    --drift-y: 0px !important;
+}
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+.artwork-image-wrap {
+    position: relative;
+
+    width: 86px;
+    height: 86px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-shrink: 0;
+}
 
 .artwork-image {
+    display: block;
 
-    position:
-        relative;
+    width: 86px;
+    height: 86px;
 
-    display:
-        block;
+    object-fit: contain;
 
-    width:
-        100%;
+    transform:
+        translate3d(var(--drift-x), var(--drift-y), 0)
+        scale(1);
 
-    height:
-        auto;
-
-    object-fit:
-        contain;
-
-    pointer-events:
-        none;
-
-    z-index:
-        3;
-
-}
-
-
-/* --------------------------------
-   TITULO DE OBRA
--------------------------------- */
-
-.artwork-title {
-
-    position:
-        relative;
-
-    margin:
-        9px 0 0 0;
-
-    padding:
-        0;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size:
-        14px;
-
-    font-weight:
-        normal;
-
-    line-height:
-        1.12;
-
-    max-width:
-        210px;
-
-    z-index:
-        4;
-
-}
-
-
-/* ============================================
-   HOVER
-============================================ */
-
-.artwork:hover {
-
-    z-index:
-        10;
-
-}
-
-
-.artwork.hovered .artwork-image {
-
-    filter:
-        contrast(1.03);
-
-}
-
-
-/* ============================================
-   PARTICULAS
-============================================ */
-
-.particle-container {
-
-    position:
-        absolute;
-
-    top:
-        50%;
-
-    left:
-        50%;
-
-    width:
-        1px;
-
-    height:
-        1px;
-
-    pointer-events:
-        none;
-
-    z-index:
-        1;
-
-}
-
-
-/*
-    El canvas dibuja las partículas,
-    así que este elemento solo sirve
-    como referencia visual/capa.
-*/
-
-
-/* ============================================
-   FILTROS
-============================================ */
-
-.emotion-filter {
-
-    position:
-        fixed;
-
-    left:
-        30px;
-
-    bottom:
-        28px;
-
-    z-index:
-        100;
-
-    display:
-        flex;
-
-    flex-wrap:
-        wrap;
-
-    gap:
-        12px;
-
-    max-width:
-        700px;
-
-}
-
-
-/* --------------------------------
-   BOTONES
--------------------------------- */
-
-.emotion {
-
-    border:
-        0;
-
-    padding:
-        0;
-
-    margin:
-        0;
-
-    background:
-        transparent;
-
-    color:
-        var(--black);
-
-    font-family:
-        "Courier New",
-        Courier,
-        monospace;
-
-    font-size:
-        14px;
-
-    font-weight:
-        normal;
-
-    line-height:
-        1;
-
-    cursor:
-        pointer;
-
-}
-
-
-/* --------------------------------
-   ACTIVO
--------------------------------- */
-
-.emotion.active {
-
-    font-weight:
-        bold;
-
-}
-
-
-/* ============================================
-   PANEL DE INFORMACIÓN
-============================================ */
-
-.artwork-info {
-
-    position:
-        fixed;
-
-    top:
-        30px;
-
-    right:
-        30px;
-
-    width:
-        320px;
-
-    padding:
-        0;
-
-    z-index:
-        200;
-
-    display:
-        none;
-
-}
-
-
-/* --------------------------------
-   VISIBLE
--------------------------------- */
-
-.artwork-info.visible {
-
-    display:
-        block;
-
-}
-
-
-/* --------------------------------
-   CERRAR
--------------------------------- */
-
-.close-info {
-
-    position:
-        absolute;
-
-    top:
-        -5px;
-
-    right:
-        0;
-
-    border:
-        0;
-
-    padding:
-        0;
-
-    background:
-        transparent;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size:
-        20px;
-
-    font-weight:
-        normal;
-
-    line-height:
-        1;
-
-    cursor:
-        pointer;
-
-    color:
-        var(--grey);
-
-}
-
-
-/* ============================================
-   INFORMACIÓN DE LA OBRA
-============================================ */
-
-.info-label {
-
-    color:
-        var(--grey);
-
-    font-size:
-        14px;
-
-    margin:
-        0 0 8px 0;
-
-}
-
-
-/* --------------------------------
-   TITULO
--------------------------------- */
-
-.artwork-info h2 {
-
-    margin:
-        0 0 25px 0;
-
-    padding:
-        0;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    font-size:
-        14px;
-
-    font-weight:
-        normal;
-
-    line-height:
-        1.15;
-
-}
-
-
-/* ============================================
-   EMOCIONES
-============================================ */
-
-.emotion-value {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        100px
-        1fr
-        50px;
-
-    align-items:
-        center;
-
-    gap:
-        10px;
-
-    margin:
-        0 0 9px 0;
-
-}
-
-
-/* --------------------------------
-   NOMBRE
--------------------------------- */
-
-.emotion-name {
-
-    font-family:
-        "Courier New",
-        Courier,
-        monospace;
-
-    font-size:
-        14px;
-
-    font-weight:
-        normal;
-
-}
-
-
-/* --------------------------------
-   BARRA
--------------------------------- */
-
-.emotion-bar {
-
-    height:
-        3px;
-
-    background:
-        rgba(0, 0, 0, .08);
-
-}
-
-
-/* --------------------------------
-   RELLENO
--------------------------------- */
-
-.emotion-bar-fill {
-
-    height:
-        100%;
+    transform-origin: center center;
 
     transition:
-        width 0.5s ease;
+        width 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        height 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
 
+    position: relative;
+    z-index: 2;
 }
 
+/*
+ * Desktop:
+ * al hacer hover la miniatura recupera aproximadamente
+ * las dimensiones que tenía anteriormente.
+ */
+@media (hover: hover) and (pointer: fine) {
 
-/* --------------------------------
-   PORCENTAJE
--------------------------------- */
+    .artwork-card:hover {
+        z-index: 30;
+    }
 
-.emotion-number {
+    .artwork-card:hover .artwork-image {
+        width: 175px;
+        height: 175px;
 
-    font-family:
-        "Courier New",
-        Courier,
-        monospace;
+        transform: translate3d(0, 0, 0);
+    }
 
-    font-size:
-        14px;
-
-    text-align:
-        right;
-
+    .artwork-card:hover {
+        --drift-x: 0px;
+        --drift-y: 0px;
+    }
 }
 
+/* =========================================================
+   INFO BOX
+   ========================================================= */
 
-/* ============================================
-   NOTA METODOLÓGICA
-============================================ */
+.artwork-info {
+    width: 100%;
 
-.method-note {
+    margin-top: 11px;
+    padding: 10px 11px 11px 11px;
 
-    margin:
-        25px 0 0 0;
+    background: var(--white);
 
-    padding:
-        0;
+    border: 1px solid rgba(23, 23, 21, 0.13);
 
-    color:
-        var(--grey);
+    text-align: left;
 
-    font-size:
-        14px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 
-    line-height:
-        1.25;
+    transform: translateY(-3px);
 
+    transition:
+        opacity 220ms ease,
+        transform 220ms ease,
+        visibility 220ms ease;
+
+    position: relative;
+    z-index: 10;
 }
 
+@media (hover: hover) and (pointer: fine) {
 
-/* ============================================
+    .artwork-card:hover .artwork-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/*
+ * Mobile:
+ * la caja se abre con tap.
+ */
+.artwork-card.is-open .artwork-info {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.info-title {
+    margin: 0 18px 9px 0;
+
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.info-emotions {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.emotion-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+
+    column-gap: 10px;
+
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+.emotion-name {
+    color: var(--grey);
+}
+
+.emotion-value {
+    color: var(--black);
+    text-align: right;
+}
+
+/*
+ * Línea de color diminuta.
+ */
+.emotion-row::before {
+    content: "";
+
+    position: absolute;
+}
+
+.emotion-indicator {
+    display: inline-block;
+
+    width: 6px;
+    height: 6px;
+
+    margin-right: 5px;
+
+    vertical-align: middle;
+}
+
+/* =========================================================
+   MOBILE CLOSE
+   ========================================================= */
+
+.info-close {
+    display: none;
+
+    position: absolute;
+
+    top: 7px;
+    right: 8px;
+
+    width: 18px;
+    height: 18px;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+    background: transparent;
+
+    font-family: Arial, sans-serif;
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 18px;
+
+    color: var(--black);
+
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+
+    .info-close {
+        display: block;
+    }
+}
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
+
+.emotion-filter {
+    position: relative;
+    z-index: 20;
+
+    flex-shrink: 0;
+
+    width: 100%;
+
+    padding: 14px 22px 17px 22px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    column-gap: 19px;
+    row-gap: 5px;
+
+    background: var(--background);
+}
+
+.emotion {
+    appearance: none;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+    background: transparent;
+
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    font-weight: 400;
+
+    color: var(--black);
+
+    cursor: pointer;
+}
+
+.emotion:hover {
+    font-weight: 700;
+}
+
+.emotion.active {
+    font-weight: 700;
+}
+
+/* =========================================================
+   COLORES DE INDICADORES
+   ========================================================= */
+
+.indicator-alegria {
+    background: var(--alegria);
+}
+
+.indicator-confianza {
+    background: var(--confianza);
+}
+
+.indicator-curiosidad {
+    background: var(--curiosidad);
+}
+
+.indicator-sorpresa {
+    background: var(--sorpresa);
+}
+
+.indicator-disgusto {
+    background: var(--disgusto);
+}
+
+.indicator-ira {
+    background: var(--ira);
+}
+
+.indicator-miedo {
+    background: var(--miedo);
+}
+
+.indicator-tristeza {
+    background: var(--tristeza);
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .artwork-card {
+        width: 155px;
+    }
+
+    .artwork-image-wrap {
+        width: 76px;
+        height: 76px;
+    }
+
+    .artwork-image {
+        width: 76px;
+        height: 76px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .artwork-card:hover .artwork-image {
+            width: 155px;
+            height: 155px;
+        }
+    }
+}
+
+/* =========================================================
    MOBILE
-============================================ */
+   ========================================================= */
 
 @media (max-width: 700px) {
 
     .header {
+        min-height: 72px;
 
-        padding:
-            18px;
+        padding: 13px 15px 12px 15px;
 
+        gap: 15px;
     }
 
+    .eyebrow {
+        font-size: 11px;
+    }
+
+    .header h1 {
+        font-size: 17px;
+    }
 
     .header-info {
-
-        display:
-            none;
-
+        font-size: 9px;
+        line-height: 1.35;
     }
 
-
-    .artwork {
-
-        width:
-            125px;
-
+    main {
+        min-height: 0;
     }
 
-
-    .artwork-title {
-
-        max-width:
-            155px;
-
+    .map-container {
+        min-height: 720px;
     }
 
-
-    .emotion-filter {
-
-        left:
-            18px;
-
-        right:
-            18px;
-
-        bottom:
-            18px;
-
-        max-width:
-            calc(100% - 36px);
-
-        gap:
-            11px;
-
+    .artwork-card {
+        width: 130px;
     }
 
+    .artwork-image-wrap {
+        width: 78px;
+        height: 78px;
+    }
+
+    .artwork-image {
+        width: 78px;
+        height: 78px;
+    }
+
+    /*
+     * En móvil no hacemos el zoom de desktop.
+     * El tap abre la información.
+     */
+    .artwork-card.is-open {
+        z-index: 30;
+    }
 
     .artwork-info {
-
-        top:
-            18px;
-
-        right:
-            18px;
-
-        width:
-            calc(100% - 36px);
-
+        width: 130px;
+        padding: 9px 9px 10px 9px;
+        margin-top: 8px;
     }
 
-}
-
-
-/* ============================================
-   PANTALLAS MUY PEQUEÑAS
-============================================ */
-
-@media (max-width: 420px) {
-
-    .artwork {
-
-        width:
-            105px;
-
+    .info-title {
+        font-size: 13px;
+        margin-bottom: 8px;
     }
 
-
-    .artwork-title {
-
-        font-size:
-            13px;
-
+    .emotion-row {
+        font-size: 9px;
     }
 
+    .emotion-filter {
+        padding: 12px 12px 15px 12px;
+
+        column-gap: 13px;
+        row-gap: 6px;
+    }
 
     .emotion {
+        font-size: 13px;
+    }
+}
 
-        font-size:
-            13px;
+/* =========================================================
+   MOBILE PEQUEÑO
+   ========================================================= */
 
+@media (max-width: 430px) {
+
+    .header {
+        align-items: flex-start;
     }
 
+    .header-info {
+        display: none;
+    }
+
+    .map-container {
+        min-height: 760px;
+    }
+
+    .artwork-card {
+        width: 120px;
+    }
+
+    .artwork-info {
+        width: 120px;
+    }
 }
