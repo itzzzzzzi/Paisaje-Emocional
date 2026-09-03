@@ -58,6 +58,15 @@ let height = 0;
 const cards = [];
 const particles = [];
 
+let animationTime = 0;
+
+const artworkMotion = [];
+
+const MIN_ARTWORK_DISTANCE = 145;
+
+const POINT_ORBIT_RADIUS = 70;
+const POINT_ORBIT_VARIATION = 32;
+
 
 /* =========================================================
    UTILIDADES
@@ -73,10 +82,93 @@ function clamp(value, min, max) {
 
 
 /* =========================================================
+   POSICIONES ORIGINALES
+   ========================================================= */
+
+function createOrganicOriginalPositions() {
+
+    const positions = [];
+
+    artworks.forEach((artwork, i) => {
+
+        const angle = i * 2.399963;
+        const radius = 0.18 + (i % 7) * 0.055;
+
+        let x =
+            0.5 +
+            Math.cos(angle) * radius +
+            Math.sin(i * 1.73) * 0.08;
+
+        let y =
+            0.5 +
+            Math.sin(angle) * radius * 0.72 +
+            Math.cos(i * 1.21) * 0.08;
+
+        x = clamp(x, 0.10, 0.90);
+        y = clamp(y, 0.12, 0.88);
+
+        for (let attempt = 0; attempt < 20; attempt++) {
+
+            let valid = true;
+
+            for (const previous of positions) {
+
+                const dx = (x - previous.x) * width;
+                const dy = (y - previous.y) * height;
+
+                const distance = Math.sqrt(
+                    dx * dx + dy * dy
+                );
+
+                if (distance < MIN_ARTWORK_DISTANCE) {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid) break;
+
+            x += random(-0.06, 0.06);
+            y += random(-0.06, 0.06);
+
+            x = clamp(x, 0.10, 0.90);
+            y = clamp(y, 0.12, 0.88);
+        }
+
+        positions.push({ x, y });
+    });
+
+    return positions;
+}
+
+let originalPositions = createOrganicOriginalPositions();
+
+
+/* =========================================================
+   MOVIMIENTO ORGÁNICO DE LAS OBRAS
+   ========================================================= */
+
+artworks.forEach(() => {
+
+    artworkMotion.push({
+        phaseX: random(0, Math.PI * 2),
+        phaseY: random(0, Math.PI * 2),
+
+        speedX: random(0.00012, 0.00022),
+        speedY: random(0.00010, 0.00020),
+
+        amplitudeX: random(7, 15),
+        amplitudeY: random(6, 13)
+    });
+});
+
+
+/* =========================================================
    RESIZE
    ========================================================= */
 
 function resizeCanvas() {
+
     const rect = canvas.getBoundingClientRect();
 
     width = rect.width;
@@ -89,71 +181,22 @@ function resizeCanvas() {
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    updateOriginalPositions();
-}
-
-window.addEventListener("resize", resizeCanvas);
-
-
-/* =========================================================
-   POSICIONES ORIGINALES
-   =========================================================
-   
-   Cada obra tiene una posición propia.
-   No hay grid.
-*/
-
-function createOrganicOriginalPositions() {
-
-    const positions = [];
-
-    artworks.forEach((artwork, i) => {
-
-        /*
-         * distribución pseudo-orgánica
-         * basada en el índice, pero sin filas regulares
-         */
-
-        const angle = i * 2.399963;
-        const radius = 0.18 + (i % 7) * 0.055;
-
-        const x =
-            0.5 +
-            Math.cos(angle) * radius +
-            Math.sin(i * 1.73) * 0.08;
-
-        const y =
-            0.5 +
-            Math.sin(angle) * radius * 0.72 +
-            Math.cos(i * 1.21) * 0.08;
-
-        positions.push({
-            x: clamp(x, 0.08, 0.92),
-            y: clamp(y, 0.10, 0.90)
-        });
-    });
-
-    return positions;
-}
-
-let originalPositions = createOrganicOriginalPositions();
-
-function updateOriginalPositions() {
-    if (!cards.length) return;
-
-    originalPositions.forEach((pos, i) => {
-        if (cards[i]) {
-            cards[i].dataset.originalX = pos.x;
-            cards[i].dataset.originalY = pos.y;
-        }
-    });
+    originalPositions = createOrganicOriginalPositions();
 
     if (currentEmotion === "all") {
-        cards.forEach((card, i) => {
-            setCardPosition(card, originalPositions[i], false);
+
+        cards.forEach((card, index) => {
+
+            setCardPosition(
+                card,
+                originalPositions[index],
+                false
+            );
         });
     }
 }
+
+window.addEventListener("resize", resizeCanvas);
 
 
 /* =========================================================
@@ -171,6 +214,7 @@ artworks.forEach((artwork, index) => {
     card.dataset.index = index;
     card.dataset.title = title;
     card.dataset.link = link;
+    card.dataset.filterMoving = "false";
 
     card.innerHTML = `
         <img
@@ -187,12 +231,14 @@ artworks.forEach((artwork, index) => {
     cards.push(card);
 
     card.addEventListener("mouseenter", () => {
+
         if (window.innerWidth > 700) {
             focusArtwork(index);
         }
     });
 
     card.addEventListener("mouseleave", () => {
+
         if (window.innerWidth > 700) {
             unfocusArtwork();
         }
@@ -200,25 +246,19 @@ artworks.forEach((artwork, index) => {
 
     card.addEventListener("click", () => {
 
-        /*
-         * Desktop:
-         * click = ir al producto
-         */
-
         if (window.innerWidth > 700) {
+
             window.open(link, "_blank");
+
             return;
         }
 
-        /*
-         * Mobile:
-         * primer click = focus
-         * segundo click = producto
-         */
-
         if (focusedArtwork === index) {
+
             window.location.href = link;
+
         } else {
+
             focusArtwork(index);
         }
     });
@@ -248,6 +288,7 @@ function setCardPosition(card, position, animate = true) {
     );
 
     if (!animate) {
+
         requestAnimationFrame(() => {
             card.style.transition = "";
         });
@@ -256,21 +297,33 @@ function setCardPosition(card, position, animate = true) {
 
 
 /* =========================================================
+   POSICIÓN ACTUAL
+   ========================================================= */
+
+function getArtworkPosition(index) {
+
+    const card = cards[index];
+
+    const x =
+        parseFloat(
+            card.style.getPropertyValue("--x")
+        ) || originalPositions[index].x * width;
+
+    const y =
+        parseFloat(
+            card.style.getPropertyValue("--y")
+        ) || originalPositions[index].y * height;
+
+    return {
+        x,
+        y
+    };
+}
+
+
+/* =========================================================
    POSICIONES DEL FILTRO
-   =========================================================
-   
-   Esta es la parte nueva.
-
-   NO hacemos:
-       sort()
-       display grid
-       columnas
-       filas
-
-   Cada obra recibe una posición propia calculada a partir
-   de su porcentaje y de una serie de desplazamientos
-   orgánicos.
-*/
+   ========================================================= */
 
 function calculateFilteredPositions(emotion) {
 
@@ -288,36 +341,26 @@ function calculateFilteredPositions(emotion) {
 
     items.forEach((item, rank) => {
 
-        /*
-         * normalized:
-         * 0 = emoción más alta
-         * 1 = emoción más baja
-         */
-
         const normalized =
             items.length === 1
                 ? 0
                 : rank / (items.length - 1);
 
-        /*
-         * Trayectoria vertical general.
-         * Pero no es una columna.
-         */
-
         const baseY =
             0.10 +
             normalized * 0.80;
 
-        /*
-         * La posición X cambia de forma orgánica.
-         * El patrón se genera por obra, no por fila.
-         */
-
         const wave1 =
-            Math.sin(rank * 1.71 + emotionIndex * 0.8) * 0.20;
+            Math.sin(
+                rank * 1.71 +
+                emotionIndex * 0.8
+            ) * 0.20;
 
         const wave2 =
-            Math.cos(rank * 0.83 + emotionIndex * 1.7) * 0.13;
+            Math.cos(
+                rank * 0.83 +
+                emotionIndex * 1.7
+            ) * 0.13;
 
         const wave3 =
             Math.sin(item.index * 2.13) * 0.08;
@@ -328,27 +371,76 @@ function calculateFilteredPositions(emotion) {
             wave2 +
             wave3;
 
-        /*
-         * Un pequeño desplazamiento adicional basado
-         * directamente en el porcentaje.
-         */
-
         x +=
             (item.value / 100 - 0.15) *
             Math.sin(item.index * 3.1) *
             0.18;
 
-        /*
-         * Y también una pequeña deformación vertical.
-         */
-
         let y =
             baseY +
-            Math.sin(item.index * 1.47 + emotionIndex) * 0.055;
+            Math.sin(
+                item.index * 1.47 +
+                emotionIndex
+            ) * 0.055;
+
+        x = clamp(x, 0.10, 0.90);
+        y = clamp(y, 0.10, 0.90);
+
+        /*
+         * Evitar superposición de cuadros.
+         */
+
+        let attempts = 0;
+
+        while (attempts < 30) {
+
+            let collision = false;
+
+            for (const existing of Object.values(result)) {
+
+                const dx =
+                    (x - existing.x) * width;
+
+                const dy =
+                    (y - existing.y) * height;
+
+                const distance =
+                    Math.sqrt(
+                        dx * dx +
+                        dy * dy
+                    );
+
+                if (distance < MIN_ARTWORK_DISTANCE) {
+
+                    collision = true;
+
+                    x +=
+                        Math.sin(
+                            attempts * 2.4 +
+                            item.index
+                        ) * 0.035;
+
+                    y +=
+                        Math.cos(
+                            attempts * 1.8 +
+                            item.index
+                        ) * 0.035;
+
+                    break;
+                }
+            }
+
+            if (!collision) break;
+
+            x = clamp(x, 0.10, 0.90);
+            y = clamp(y, 0.10, 0.90);
+
+            attempts++;
+        }
 
         result[item.index] = {
-            x: clamp(x, 0.08, 0.92),
-            y: clamp(y, 0.08, 0.92)
+            x,
+            y
         };
     });
 
@@ -370,50 +462,71 @@ function applyFilter(emotion) {
 
             card.classList.remove("hidden");
 
-            /*
-             * Volvemos a la posición original EXACTA.
-             */
+            card.dataset.filterMoving = "true";
 
             setCardPosition(
                 card,
                 originalPositions[index],
                 true
             );
+
+            card.dataset.filteredPosition =
+                JSON.stringify(
+                    originalPositions[index]
+                );
+
+            setTimeout(() => {
+
+                card.dataset.filterMoving = "false";
+
+            }, 2900);
         });
 
         return;
     }
 
-    const emotionIndex = emotions.indexOf(emotion);
+    const emotionIndex =
+        emotions.indexOf(emotion);
 
-    const positions = calculateFilteredPositions(emotion);
+    const positions =
+        calculateFilteredPositions(emotion);
 
     cards.forEach((card, index) => {
 
-        const value = artworks[index][1][emotionIndex];
-
-        /*
-         * Solo desaparece si es exactamente 0.
-         */
+        const value =
+            artworks[index][1][emotionIndex];
 
         if (value === 0) {
+
             card.classList.add("hidden");
+
             return;
         }
 
         card.classList.remove("hidden");
 
-        /*
-         * IMPORTANTE:
-         * no modificamos el orden de cards.
-         * cada obra se desplaza desde donde está ahora.
-         */
+        const position =
+            positions[index];
+
+        card.dataset.filteredPosition =
+            JSON.stringify(position);
+
+        card.dataset.filterMoving = "true";
+
+        card.style.transition =
+            "transform 3.4s cubic-bezier(.16,.72,.25,1)";
 
         setCardPosition(
             card,
-            positions[index],
+            position,
             true
         );
+
+        setTimeout(() => {
+
+            card.dataset.filterMoving = "false";
+
+        }, 3500);
     });
 }
 
@@ -422,19 +535,25 @@ function applyFilter(emotion) {
    FILTROS
    ========================================================= */
 
-document.querySelectorAll(".emotion").forEach(button => {
+document
+    .querySelectorAll(".emotion")
+    .forEach(button => {
 
-    button.addEventListener("click", () => {
+        button.addEventListener("click", () => {
 
-        document
-            .querySelectorAll(".emotion")
-            .forEach(btn => btn.classList.remove("active"));
+            document
+                .querySelectorAll(".emotion")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
 
-        button.classList.add("active");
+            button.classList.add("active");
 
-        applyFilter(button.dataset.emotion);
+            applyFilter(
+                button.dataset.emotion
+            );
+        });
     });
-});
 
 
 /* =========================================================
@@ -443,9 +562,11 @@ document.querySelectorAll(".emotion").forEach(button => {
 
 function showInfo(index) {
 
-    const [title, values] = artworks[index];
+    const [title, values] =
+        artworks[index];
 
-    artworkTitle.textContent = title;
+    artworkTitle.textContent =
+        title;
 
     emotionValues.innerHTML = "";
 
@@ -460,8 +581,11 @@ function showInfo(index) {
 
         const value = values[i];
 
-        const row = document.createElement("div");
-        row.className = "emotion-row";
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "emotion-row";
 
         row.innerHTML = `
             <span>${emotion.toLowerCase()}</span>
@@ -495,8 +619,11 @@ function focusArtwork(index) {
     cards.forEach((card, i) => {
 
         if (i === index) {
+
             card.classList.add("focused");
+
         } else {
+
             card.classList.remove("focused");
         }
     });
@@ -507,11 +634,14 @@ function focusArtwork(index) {
 
 function unfocusArtwork() {
 
-    if (window.innerWidth <= 700) return;
+    if (window.innerWidth <= 700) {
+        return;
+    }
 
     focusedArtwork = null;
 
     cards.forEach(card => {
+
         card.classList.remove("focused");
     });
 
@@ -526,6 +656,7 @@ closeInfo.addEventListener("click", event => {
     focusedArtwork = null;
 
     cards.forEach(card => {
+
         card.classList.remove("focused");
     });
 
@@ -534,7 +665,7 @@ closeInfo.addEventListener("click", event => {
 
 
 /* =========================================================
-   PUNTOS / EMOCIONES
+   PUNTOS
    ========================================================= */
 
 function createParticles() {
@@ -547,42 +678,53 @@ function createParticles() {
 
         values.forEach((value, emotionIndex) => {
 
-            /*
-             * Exactamente redondeado:
-             * 20.69 = 21 puntos
-             */
-
-            const count = Math.round(value);
+            const count =
+                Math.round(value);
 
             for (let i = 0; i < count; i++) {
 
-                /*
-                 * Algunos puntos pueden atravesar
-                 * el área de las obras.
-                 *
-                 * No se crea un comportamiento especial
-                 * de hover: siguen exactamente igual.
-                 */
+                const angle =
+                    (i / Math.max(count, 1)) *
+                    Math.PI * 2 +
+                    random(-0.7, 0.7);
 
-                const overlap =
-                    Math.random() < 0.10;
+                const radius =
+                    random(
+                        18,
+                        POINT_ORBIT_RADIUS +
+                        random(
+                            -POINT_ORBIT_VARIATION,
+                            POINT_ORBIT_VARIATION
+                        )
+                    );
 
                 particles.push({
+
                     artworkIndex,
+
                     emotionIndex,
 
-                    x: random(
-                        overlap ? 0.25 : 0.03,
-                        overlap ? 0.75 : 0.97
-                    ),
+                    angle,
 
-                    y: random(
-                        overlap ? 0.22 : 0.05,
-                        overlap ? 0.78 : 0.95
-                    ),
+                    radius,
 
-                    driftX: random(-0.00018, 0.00018),
-                    driftY: random(-0.00018, 0.00018)
+                    angularSpeed:
+                        random(
+                            -0.0008,
+                            0.0008
+                        ),
+
+                    radialSpeed:
+                        random(
+                            -0.015,
+                            0.015
+                        ),
+
+                    phase:
+                        random(
+                            0,
+                            Math.PI * 2
+                        )
                 });
             }
         });
@@ -593,57 +735,214 @@ createParticles();
 
 
 /* =========================================================
-   ANIMACIÓN DE PUNTOS
+   MOVIMIENTO DE LOS PUNTOS
    ========================================================= */
 
 function animateParticles() {
 
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
 
     particles.forEach(particle => {
 
-        particle.x += particle.driftX;
-        particle.y += particle.driftY;
-
-        if (particle.x < 0.02 || particle.x > 0.98) {
-            particle.driftX *= -1;
-        }
-
-        if (particle.y < 0.02 || particle.y > 0.98) {
-            particle.driftY *= -1;
-        }
+        const artworkIsFocused =
+            focusedArtwork ===
+            particle.artworkIndex;
 
         /*
-         * Con filtro:
-         * solo mostramos los puntos de la emoción.
+         * Los puntos se paran junto con su obra.
          */
+
+        if (!artworkIsFocused) {
+
+            particle.angle +=
+                particle.angularSpeed;
+
+            particle.radius +=
+                particle.radialSpeed;
+
+            if (particle.radius < 18) {
+
+                particle.radius = 18;
+
+                particle.radialSpeed *= -1;
+            }
+
+            if (
+                particle.radius >
+                POINT_ORBIT_RADIUS +
+                POINT_ORBIT_VARIATION
+            ) {
+
+                particle.radius =
+                    POINT_ORBIT_RADIUS +
+                    POINT_ORBIT_VARIATION;
+
+                particle.radialSpeed *= -1;
+            }
+        }
+
+        const artworkPosition =
+            getArtworkPosition(
+                particle.artworkIndex
+            );
+
+        const organicRadius =
+            particle.radius +
+            Math.sin(
+                animationTime * 0.018 +
+                particle.phase
+            ) * 7;
+
+        const x =
+            artworkPosition.x +
+            Math.cos(
+                particle.angle
+            ) *
+            organicRadius;
+
+        const y =
+            artworkPosition.y +
+            Math.sin(
+                particle.angle
+            ) *
+            organicRadius;
 
         if (
             currentEmotion !== "all" &&
-            emotions[particle.emotionIndex] !== currentEmotion
+            emotions[
+                particle.emotionIndex
+            ] !== currentEmotion
         ) {
             return;
         }
 
-        const x = particle.x * width;
-        const y = particle.y * height;
-
         ctx.beginPath();
 
-        /*
-         * Todos exactamente iguales.
-         */
-
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.arc(
+            x,
+            y,
+            2,
+            0,
+            Math.PI * 2
+        );
 
         ctx.globalAlpha = 1;
+
         ctx.fillStyle =
-            colors[emotions[particle.emotionIndex]];
+            colors[
+                emotions[
+                    particle.emotionIndex
+                ]
+            ];
 
         ctx.fill();
     });
 
-    requestAnimationFrame(animateParticles);
+    animationTime += 1;
+
+    requestAnimationFrame(
+        animateParticles
+    );
+}
+
+
+/* =========================================================
+   MOVIMIENTO DE LAS OBRAS
+   ========================================================= */
+
+function animateArtworks() {
+
+    cards.forEach((card, index) => {
+
+        /*
+         * Obra seleccionada = completamente quieta.
+         */
+
+        if (focusedArtwork === index) {
+            return;
+        }
+
+        /*
+         * Mientras está viajando hacia la posición
+         * del filtro, no añadimos movimiento.
+         */
+
+        if (
+            card.dataset.filterMoving === "true"
+        ) {
+            return;
+        }
+
+        let base;
+
+        if (
+            currentEmotion === "all"
+        ) {
+
+            base =
+                originalPositions[index];
+
+        } else if (
+            card.dataset.filteredPosition
+        ) {
+
+            base =
+                JSON.parse(
+                    card.dataset.filteredPosition
+                );
+
+        } else {
+
+            base =
+                originalPositions[index];
+        }
+
+        const motion =
+            artworkMotion[index];
+
+        const offsetX =
+            Math.sin(
+                animationTime *
+                motion.speedX +
+                motion.phaseX
+            ) *
+            motion.amplitudeX;
+
+        const offsetY =
+            Math.cos(
+                animationTime *
+                motion.speedY +
+                motion.phaseY
+            ) *
+            motion.amplitudeY;
+
+        const x =
+            base.x * width +
+            offsetX;
+
+        const y =
+            base.y * height +
+            offsetY;
+
+        card.style.setProperty(
+            "--x",
+            `${x}px`
+        );
+
+        card.style.setProperty(
+            "--y",
+            `${y}px`
+        );
+    });
+
+    requestAnimationFrame(
+        animateArtworks
+    );
 }
 
 
@@ -654,6 +953,7 @@ function animateParticles() {
 resizeCanvas();
 
 cards.forEach((card, index) => {
+
     setCardPosition(
         card,
         originalPositions[index],
@@ -662,3 +962,5 @@ cards.forEach((card, index) => {
 });
 
 animateParticles();
+
+animateArtworks();
