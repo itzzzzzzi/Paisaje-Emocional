@@ -57,10 +57,7 @@ body {
 .header-info {
     font-size: 12px;
     line-height: 1.1;
-}
-
-.eyebrow {
-    text-transform: none;
+    color: #777;
 }
 
 .header h1 {
@@ -68,6 +65,7 @@ body {
     font-size: 12px;
     line-height: 1.1;
     font-weight: normal;
+    color: var(--text);
 }
 
 .header-info {
@@ -127,7 +125,7 @@ main {
         translate(-50%, -50%);
 
     transition:
-        transform 1.35s cubic-bezier(.22, .75, .25, 1),
+        transform 2.8s cubic-bezier(.22, .61, .36, 1),
         opacity .7s ease;
 
     will-change: transform;
@@ -151,11 +149,6 @@ main {
     position: relative;
     z-index: 2;
 }
-
-/*
-   El título ocupa su propio espacio debajo
-   de la imagen. Nunca se coloca encima.
-*/
 
 .artwork-title {
     width: max-content;
@@ -189,25 +182,12 @@ main {
 .artwork:hover .artwork-image,
 .artwork.focused .artwork-image {
     width: 180px;
+    z-index: 20;
 }
-
-/*
-   El título aparece debajo de la imagen ampliada.
-*/
 
 .artwork:hover .artwork-title,
 .artwork.focused .artwork-title {
     opacity: 1;
-}
-
-/*
-   La obra ampliada se coloca por encima
-   de los puntos.
-*/
-
-.artwork:hover .artwork-image,
-.artwork.focused .artwork-image {
-    z-index: 20;
 }
 
 /* =========================
@@ -310,6 +290,7 @@ main {
 
 .emotion-bar-fill {
     height: 100%;
+    display: block;
 }
 
 .emotion-value {
@@ -348,11 +329,12 @@ main {
 
     cursor: pointer;
 
-    color: var(--text);
+    color: #777;
 }
 
 .emotion.active {
     font-weight: bold;
+    color: #777;
 }
 
 /* =========================
