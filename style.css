@@ -24,17 +24,25 @@ body {
     font-size: 12px;
 }
 
+/* =========================
+   HEADER
+   ========================= */
+
 .header {
     position: fixed;
     z-index: 1000;
     top: 0;
     left: 0;
+
     width: 100%;
     height: var(--header-height);
+
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+
     padding: 13px 15px;
+
     background: transparent;
     pointer-events: none;
 }
@@ -64,6 +72,10 @@ body {
     text-align: right;
 }
 
+/* =========================
+   MAP
+   ========================= */
+
 main {
     position: fixed;
     inset: 0;
@@ -73,49 +85,67 @@ main {
     position: absolute;
     left: 0;
     right: 0;
+
     top: var(--header-height);
     bottom: var(--filter-height);
+
     overflow: hidden;
 }
 
 #emotionCanvas {
     position: absolute;
     inset: 0;
+
     width: 100%;
     height: 100%;
+
     z-index: 1;
     pointer-events: none;
 }
 
+/* =========================
+   ARTWORKS
+   ========================= */
+
 #artworkLayer {
     position: absolute;
     inset: 0;
+
     z-index: 10;
     pointer-events: none;
 }
 
 .artwork {
     position: absolute;
+
     width: 180px;
+
     transform:
         translate3d(var(--x), var(--y), 0)
         translate(-50%, -50%);
+
     transition:
-        transform 3.8s cubic-bezier(.16, .72, .25, 1),
+        transform 2.8s cubic-bezier(.22, .61, .36, 1),
         opacity .7s ease;
+
     will-change: transform;
+
     pointer-events: auto;
     cursor: pointer;
 }
 
 .artwork-image {
     display: block;
+
     width: 112px;
     height: auto;
+
     margin: 0 auto;
+
     transition:
         width .45s cubic-bezier(.2, .75, .25, 1),
         transform .45s cubic-bezier(.2, .75, .25, 1);
+
     position: relative;
     z-index: 2;
 }
@@ -123,16 +153,26 @@ main {
 .artwork-title {
     width: max-content;
     max-width: 180px;
+
     margin: 5px auto 0;
+
     font-family: "Times New Roman", Times, serif;
     font-size: 12px;
     line-height: 1.1;
+
     text-align: center;
+
     opacity: 0;
+
     transition: opacity .25s ease;
+
     position: relative;
     z-index: 3;
 }
+
+/* =========================
+   HOVER / FOCUS
+   ========================= */
 
 .artwork:hover,
 .artwork.focused {
@@ -150,25 +190,42 @@ main {
     opacity: 1;
 }
 
+/* =========================
+   HIDDEN ARTWORKS
+   ========================= */
+
 .artwork.hidden {
     opacity: 0;
     pointer-events: none;
 }
 
+/* =========================
+   INFO PANEL
+   ========================= */
+
 .artwork-info {
     position: fixed;
+
     right: 15px;
     bottom: calc(var(--filter-height) + 15px);
+
     width: 265px;
+
     padding: 11px 12px 12px;
+
     background: var(--background);
+
     border: 1px solid rgba(0, 0, 0, .18);
+
     z-index: 900;
+
     opacity: 0;
     visibility: hidden;
+
     transition:
         opacity .25s ease,
         visibility .25s ease;
+
     font-size: 12px;
 }
 
@@ -179,25 +236,32 @@ main {
 
 .close-info {
     position: absolute;
+
     top: 7px;
     right: 8px;
+
     border: 0;
     padding: 0;
+
     background: transparent;
+
     font-family: "Times New Roman", Times, serif;
     font-size: 17px;
     line-height: 1;
+
     cursor: pointer;
 }
 
 .info-label {
     margin-bottom: 3px;
+
     font-family: "Courier New", Courier, monospace;
     font-size: 11px;
 }
 
 .artwork-info h2 {
     margin: 0 20px 10px 0;
+
     font-family: "Times New Roman", Times, serif;
     font-size: 12px;
     font-weight: normal;
@@ -207,8 +271,11 @@ main {
 .emotion-row {
     display: grid;
     grid-template-columns: 82px 1fr 34px;
+
     align-items: center;
+
     height: 14px;
+
     font-family: "Courier New", Courier, monospace;
     font-size: 10px;
 }
@@ -216,6 +283,7 @@ main {
 .emotion-bar {
     height: 3px;
     margin: 0 7px;
+
     background: #ddd;
     overflow: hidden;
 }
@@ -229,26 +297,38 @@ main {
     text-align: right;
 }
 
+/* =========================
+   FILTER
+   ========================= */
+
 .emotion-filter {
     position: fixed;
+
     z-index: 1000;
+
     left: 15px;
     bottom: 12px;
+
     display: flex;
     flex-wrap: wrap;
     gap: 0 13px;
+
     background: transparent;
 }
 
 .emotion {
     padding: 0;
     margin: 0;
+
     border: 0;
     background: transparent;
+
     font-family: "Courier New", Courier, monospace;
     font-size: 11px;
     line-height: 1.2;
+
     cursor: pointer;
+
     color: #777;
 }
 
@@ -257,7 +337,12 @@ main {
     color: #777;
 }
 
+/* =========================
+   MOBILE
+   ========================= */
+
 @media (max-width: 700px) {
+
     :root {
         --header-height: 66px;
         --filter-height: 67px;
@@ -303,7 +388,9 @@ main {
         left: 12px;
         right: 12px;
         bottom: calc(var(--filter-height) + 8px);
+
         width: auto;
+
         padding: 10px;
     }
 
@@ -311,6 +398,7 @@ main {
         left: 12px;
         right: 12px;
         bottom: 10px;
+
         gap: 5px 11px;
     }
 
