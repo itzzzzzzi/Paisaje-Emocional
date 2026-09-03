@@ -11,133 +11,45 @@
 
 <body>
 
-    <!-- =========================
-         HEADER
-         ========================= -->
-
     <header class="header">
-
         <div class="header-left">
-
             <div class="eyebrow">
                 silvia & the spyglass / ARTE Y NEUROCIENCIA II
             </div>
-
             <h1>
                 Paisaje Emocional
             </h1>
-
         </div>
-
 
         <div class="header-info">
             56 OBRAS · 100 PARTICIPANTES
             <br>
             EEG · GSR · HR
         </div>
-
     </header>
 
-
-    <!-- =========================
-         MAIN
-         ========================= -->
-
     <main>
-
         <section class="map-container">
-
             <canvas id="emotionCanvas"></canvas>
-
             <div id="artworkLayer"></div>
-
         </section>
-
-
-        <!-- =========================
-             FILTROS
-             ========================= -->
 
         <nav
             class="emotion-filter"
             aria-label="Filtrar por emoción"
         >
-
-            <button
-                class="emotion active"
-                data-emotion="all"
-            >
-                todas
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Alegría"
-            >
-                alegría
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Confianza"
-            >
-                confianza
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Curiosidad"
-            >
-                curiosidad
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Sorpresa"
-            >
-                sorpresa
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Disgusto"
-            >
-                disgusto
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Ira"
-            >
-                ira
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Miedo"
-            >
-                miedo
-            </button>
-
-            <button
-                class="emotion"
-                data-emotion="Tristeza"
-            >
-                tristeza
-            </button>
-
+            <button class="emotion active" data-emotion="all">todas</button>
+            <button class="emotion" data-emotion="Alegría">alegría</button>
+            <button class="emotion" data-emotion="Confianza">confianza</button>
+            <button class="emotion" data-emotion="Curiosidad">curiosidad</button>
+            <button class="emotion" data-emotion="Sorpresa">sorpresa</button>
+            <button class="emotion" data-emotion="Disgusto">disgusto</button>
+            <button class="emotion" data-emotion="Ira">ira</button>
+            <button class="emotion" data-emotion="Miedo">miedo</button>
+            <button class="emotion" data-emotion="Tristeza">tristeza</button>
         </nav>
 
-
-        <!-- =========================
-             INFO DE LA OBRA
-             ========================= -->
-
-        <aside
-            id="artworkInfo"
-            class="artwork-info"
-        >
-
+        <aside id="artworkInfo" class="artwork-info">
             <button
                 id="closeInfo"
                 class="close-info"
@@ -146,27 +58,16 @@
                 ×
             </button>
 
-
             <div class="info-label">
                 OBRA
             </div>
 
-
             <h2 id="artworkTitle"></h2>
 
-
             <div id="emotionValues"></div>
-
         </aside>
-
     </main>
 
-
-    <!-- =========================
-         JAVASCRIPT
-         ========================= -->
-
     <script src="script.js"></script>
-
 </body>
 </html>
